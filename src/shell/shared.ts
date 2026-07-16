@@ -6,9 +6,15 @@ export function brandMarkup() {
 }
 
 export function navigationMarkup(active?: string) {
-  const core = [['colors','Colors'],['dice','Dice'],['wheel','Wheel']]
-  const extras: Record<string,string> = { coin:'Coin', teams:'Teams', cards:'Cards', rps:'RPS' }
-  const links = active && extras[active] ? [...core, [active, extras[active]]] : core
+  const links = [
+    ['colors', 'Colors'],
+    ['dice', 'Dice'],
+    ['wheel', 'Wheel'],
+    ['coin', 'Coin'],
+    ['teams', 'Teams'],
+    ['cards', 'Cards'],
+    ['rps', 'RPS'],
+  ]
   return `<nav class="site-nav" aria-label="Shuffle modes">
     ${links.map(([id,label])=>`<a href="/${id}" ${active === id ? 'aria-current="page"' : ''}>${label}</a>`).join('')}
   </nav>`

@@ -1,12 +1,10 @@
 @media (max-width: 760px) {
-  .landing-header { min-height:76px; padding:0 16px; }
-  .landing-header .site-nav { position:static; transform:none; }
-  .landing-header .site-nav a { padding:7px 9px; }
-  .topbar .site-nav { left:auto; right:16px; transform:none; }
-  .topbar .site-nav a { padding:7px 9px; }
+  .landing-header,.topbar { min-height:126px; align-items:flex-start; padding:16px 16px 0; }
+  .landing-header .site-nav,.topbar .site-nav { position:absolute; right:12px; bottom:10px; left:12px; justify-content:space-between; overflow:visible; transform:none; border-radius:12px; }
+  .landing-header .site-nav::-webkit-scrollbar,.topbar .site-nav::-webkit-scrollbar { display:none; }
+  .landing-header .site-nav a,.topbar .site-nav a { padding:8px 6px; font-size:.52rem; letter-spacing:.05em; }
   .topbar .mode-index { display:none; }
-  .tool-shell .site-nav a:not([aria-current="page"]) { display:none; }
-  .landing-hero { min-height:760px; padding:100px 22px 70px; justify-content:flex-end; }
+  .landing-hero { min-height:810px; padding:150px 22px 70px; justify-content:flex-end; }
   .landing-hero h1 { font-size:clamp(3.8rem,17vw,5.8rem); }
   .landing-orbit { top:8%; right:-55%; width:125vw; opacity:.72; }
   .landing-lede { margin:28px 0; font-size:.98rem; }
@@ -19,17 +17,17 @@
   .landing-manifesto { min-height:540px; padding:84px 22px; }
 
   .experience { min-height: 100svh; }
-  .scene-copy { top: 94px; }
+  .scene-copy { top: 144px; }
   .scene-copy h1 { font-size: clamp(2.7rem, 11.5vw, 4rem); }
-  .world { inset-block: 245px 120px; }
+  .world { inset-block: 295px 120px; }
   .versus { bottom: 43%; }
   .field-notes { grid-template-columns: 1fr; gap: 52px; padding: 84px 22px; }
   .field-notes h2 { font-size: clamp(2.9rem, 13vw, 4.6rem); }
 
   .dice-experience { min-height:1050px; }
-  .dice-copy { top:104px; left:18px; }
+  .dice-copy { top:154px; left:18px; }
   .dice-copy h1 { font-size:clamp(3rem,13vw,4.7rem); }
-  .dice-world { inset:235px 0 360px; }
+  .dice-world { inset:285px 0 360px; }
   .dice-total { top:auto; right:16px; bottom:12px; }
   .dice-controls { min-height:360px; grid-template-columns:minmax(0,1fr) !important; align-content:center; gap:20px; padding:22px 16px; }
   .dice-controls fieldset,.dice-roll { grid-column:1; }
@@ -44,5 +42,9 @@
   .die-guide-grid { grid-template-columns:repeat(2,1fr); }
   .die-guide-grid article { min-height:210px; padding:22px; }
   .die-guide-grid h3 { margin-top:54px; }
-  .tool-hero{display:block;min-height:0}.tool-heading{padding:80px 22px 30px}.tool-heading h1{font-size:clamp(3.7rem,15vw,5.5rem)}.tool-stage{min-height:520px;padding:50px 16px 100px}.tool-controls{position:relative;grid-template-columns:1fr;padding:22px 16px}.tool-action{width:100%;min-width:0}.tool-outcome{left:20px;bottom:20px}.wheel-wrap{width:min(88vw,430px)}.generated-teams{grid-template-columns:1fr 1fr}.deck-stage{width:100%;flex-direction:column;gap:20px;overflow:hidden}.card-stack{width:112px}.drawn-cards{width:100%;min-height:150px;gap:4px;justify-content:center}.playing-card{width:min(19vw,84px)}.rps-arena{gap:12px}.rps-arena article b{width:38vw;font-size:4rem}.rps-choices{display:grid;grid-template-columns:repeat(3,1fr)}.rps-choices button{min-width:0}.tool-index{display:none}
+  .tool-hero{display:block;min-height:0}.tool-heading{padding:70px 22px 30px}.tool-heading h1{font-size:clamp(3.7rem,15vw,5.5rem)}.tool-stage{min-height:520px;padding:50px 16px 100px}.tool-controls{position:relative;grid-template-columns:1fr;padding:22px 16px}.tool-action{width:100%;min-width:0}.tool-outcome{left:20px;bottom:20px}.wheel-wrap{width:min(86vw,430px)}.choice-wheel span{font-size:clamp(.78rem,3.4vw,1rem)}.generated-teams{grid-template-columns:1fr 1fr}.deck-stage{width:100%;flex-direction:column;gap:20px;overflow:hidden}.card-stack{width:112px}.drawn-cards{width:100%;min-height:150px;gap:4px;justify-content:center}.playing-card{width:min(19vw,84px)}.rps-arena{gap:12px}.rps-arena article b{width:38vw;font-size:4rem}.rps-choices{display:grid;grid-template-columns:repeat(3,1fr)}.rps-choices button{min-width:0}.tool-index{display:none}
+}
+
+@media (min-width:761px) and (max-width:1100px) {
+  .landing-header .brand strong,.topbar .brand strong { display:none; }
 }

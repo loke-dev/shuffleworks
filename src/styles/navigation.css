@@ -4,7 +4,7 @@
   position: absolute;
   left: 50%;
   display: flex;
-  gap: 6px;
+  gap: 3px;
   transform: translateX(-50%);
   padding: 5px;
   border: 1px solid var(--line);
@@ -14,7 +14,8 @@
 }
 
 .site-nav a {
-  padding: 8px 14px;
+  flex: 0 0 auto;
+  padding: 8px 10px;
   border-radius: 99px;
   color: var(--muted);
   font: 0.58rem var(--mono);

@@ -18,13 +18,27 @@ export function renderWheel(root: HTMLElement) {
   const outcome = root.querySelector<HTMLElement>('[data-outcome]')!
   const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-spin]')]
   let turns = 0
+  let rotation = 0
   textarea.value = entries.join('\n')
   const getEntries = () => textarea.value.split('\n').map((item) => item.trim()).filter(Boolean).slice(0, 24)
+  const isUpsideDown = (angle: number) => {
+    const normalized = ((angle + rotation) % 360 + 360) % 360
+    return normalized > 90 && normalized < 270
+  }
+  const orientLabels = () => {
+    wheel.querySelectorAll<HTMLElement>('[data-angle]').forEach((label) => {
+      const angle = Number(label.dataset.angle)
+      label.classList.toggle('is-flipped', isUpsideDown(angle))
+    })
+  }
   const render = () => {
     const values = getEntries()
-    const colors = ['#a974ff','#38a0ff','#ff625b','#ffd84f','#67e8c3','#ff8ed4']
+    const colors = ['#6d54ad','#286c9d','#9f494b','#9d873c','#367d70','#955478']
     wheel.style.background = values.length ? `conic-gradient(${values.map((_, index) => `${colors[index % colors.length]} ${index / values.length * 100}% ${(index + 1) / values.length * 100}%`).join(',')})` : '#161822'
-    wheel.innerHTML = values.map((value, index) => `<span style="--angle:${(index + .5) / values.length * 360}deg">${escapeHtml(value)}</span>`).join('')
+    wheel.innerHTML = values.map((value, index) => {
+      const angle = (index + .5) / values.length * 360
+      return `<span data-angle="${angle}" class="${isUpsideDown(angle) ? 'is-flipped' : ''}" style="--angle:${angle}deg"><b>${escapeHtml(value)}</b></span>`
+    }).join('')
     saveLocal(KEY, values)
   }
   const spin = () => {
@@ -33,8 +47,12 @@ export function renderWheel(root: HTMLElement) {
     const winner = randomInt(values.length)
     turns += 5 + randomInt(3)
     const center = (winner + .5) / values.length * 360
-    wheel.style.transform = `rotate(${turns * 360 - center}deg)`
+    rotation = turns * 360 - center
+    wheel.classList.add('is-spinning')
+    wheel.style.transform = `rotate(${rotation}deg)`
     window.setTimeout(() => {
+      wheel.classList.remove('is-spinning')
+      orientLabels()
       outcome.innerHTML = `<span>Selected</span><b>${escapeHtml(values[winner])}</b>`
       page.announcement.textContent = `Selected ${values[winner]}`
       buttons.forEach((button) => { button.disabled = false })
