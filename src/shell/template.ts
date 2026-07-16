@@ -1,13 +1,13 @@
+import { brandMarkup, footerMarkup, navigationMarkup } from './shared'
+
 export function createAppMarkup(year: number) {
   return `
     <div class="app-shell">
       <main>
         <section class="experience" aria-labelledby="hero-title">
           <header class="topbar">
-            <button class="brand" type="button" data-shuffle aria-label="Shuffle again">
-              <span class="brand-glyph" aria-hidden="true"><i></i><i></i><i></i></span>
-              <strong>Shuffleworks</strong>
-            </button>
+            ${brandMarkup()}
+            ${navigationMarkup('colors')}
             <div class="mode-index"><span>Spectrum</span><b>01</b></div>
           </header>
 
@@ -66,7 +66,7 @@ export function createAppMarkup(year: number) {
         </section>
       </main>
 
-      <footer><span>Shuffleworks / ${year}</span><a href="https://github.com/loke-dev/shuffleworks">Source</a></footer>
+      ${footerMarkup(year)}
       <p class="sr-only" aria-live="assertive" data-announcement></p>
     </div>`
 }

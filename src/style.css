@@ -3,4 +3,7 @@
 @import "./styles/layout.css";
 @import "./styles/experience.css";
 @import "./styles/content.css";
+@import "./styles/navigation.css";
+@import "./styles/landing.css";
+@import "./styles/dice.css";
 @import "./styles/responsive.css";

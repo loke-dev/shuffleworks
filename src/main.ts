@@ -1,47 +1,21 @@
 import './style.css'
-import { loadMode } from './modes/registry'
-import { createShell } from './shell/createShell'
+import { resolveRoute } from './router'
 
 const root = document.querySelector<HTMLDivElement>('#app')
-
 if (!root) throw new Error('Shuffleworks root not found')
 
-const shell = createShell(root)
-const [{ ShuffleEngine }, teams] = await Promise.all([
-  import('./engine/ShuffleEngine'),
-  loadMode('teams', shell),
-])
-const engine = new ShuffleEngine(shell.canvas)
+const route = resolveRoute(window.location.pathname)
 
-await engine.start(teams)
-shell.setReady()
-
-let isShuffling = false
-
-async function shuffle() {
-  if (isShuffling) return
-  isShuffling = true
-  shell.setShuffling(true)
-
-  try {
-    const result = await engine.shuffle()
-    shell.renderResult(result)
-  } finally {
-    shell.setShuffling(false)
-    isShuffling = false
-  }
+if (route === 'home') {
+  const { renderHome } = await import('./pages/home')
+  renderHome(root)
+} else if (route === 'colors') {
+  const { renderColors } = await import('./pages/colors')
+  await renderColors(root)
+} else if (route === 'dice') {
+  const { renderDice } = await import('./pages/dice')
+  await renderDice(root)
+} else {
+  const { renderNotFound } = await import('./pages/notFound')
+  renderNotFound(root)
 }
-
-shell.onShuffle(shuffle)
-
-window.addEventListener('keydown', (event) => {
-  const refresh = event.code === 'F5'
-    || ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'r')
-
-  if (refresh || (event.code === 'Space' && event.target === document.body)) {
-    event.preventDefault()
-    shuffle()
-  }
-})
-
-window.setTimeout(shuffle, 640)

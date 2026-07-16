@@ -11,6 +11,15 @@ export const modeRegistry: ModeDefinition[] = [
       return new TeamMode(shell)
     },
   },
+  {
+    id: 'dice',
+    name: 'Polyhedra',
+    order: 2,
+    async load() {
+      const { DiceMode } = await import('./dice/DiceMode')
+      return new DiceMode({ count: 2, sides: 6 })
+    },
+  },
 ]
 
 export async function loadMode(id: string, shell: AppShell) {

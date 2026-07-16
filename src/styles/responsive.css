@@ -1,4 +1,22 @@
 @media (max-width: 760px) {
+  .landing-header { min-height:76px; padding:0 16px; }
+  .landing-header .site-nav { position:static; transform:none; }
+  .landing-header .site-nav a { padding:7px 9px; }
+  .topbar .site-nav { left:auto; right:16px; transform:none; }
+  .topbar .site-nav a { padding:7px 9px; }
+  .topbar .mode-index { display:none; }
+  .landing-hero { min-height:760px; padding:100px 22px 70px; justify-content:flex-end; }
+  .landing-hero h1 { font-size:clamp(3.8rem,17vw,5.8rem); }
+  .landing-orbit { top:8%; right:-55%; width:125vw; opacity:.72; }
+  .landing-lede { margin:28px 0; font-size:.98rem; }
+  .mode-library { padding:84px 12px; }
+  .mode-library > header { grid-template-columns:1fr; gap:30px; }
+  .mode-library h2,.landing-manifesto > p { font-size:clamp(3rem,13vw,4.6rem); }
+  .mode-cards { grid-template-columns:1fr; }
+  .mode-card { min-height:510px; padding:26px; }
+  .mini-deck { inset:15% 8% 36%; }
+  .landing-manifesto { min-height:540px; padding:84px 22px; }
+
   .experience { min-height: 100svh; }
   .scene-copy { top: 94px; }
   .scene-copy h1 { font-size: clamp(2.7rem, 11.5vw, 4rem); }
@@ -6,4 +24,20 @@
   .versus { bottom: 43%; }
   .field-notes { grid-template-columns: 1fr; gap: 52px; padding: 84px 22px; }
   .field-notes h2 { font-size: clamp(2.9rem, 13vw, 4.6rem); }
+
+  .dice-experience { min-height:1050px; }
+  .dice-copy { top:104px; left:18px; }
+  .dice-copy h1 { font-size:clamp(3rem,13vw,4.7rem); }
+  .dice-world { inset:235px 0 360px; }
+  .dice-controls { min-height:360px; grid-template-columns:minmax(0,1fr) !important; align-content:center; gap:20px; padding:22px 16px; }
+  .dice-controls fieldset,.dice-roll { grid-column:1; }
+  .dice-roll { min-width:0; width:100%; }
+  .dice-result { grid-template-columns:1fr; gap:52px; padding:90px 22px; }
+  .dice-result-grid ul { grid-template-columns:repeat(2,1fr); }
+  .dice-guide { padding:90px 12px; }
+  .dice-guide > header { grid-template-columns:1fr; gap:30px; margin-bottom:60px; }
+  .dice-guide h2,.dice-result h2 { font-size:clamp(3rem,13vw,4.7rem); }
+  .die-guide-grid { grid-template-columns:repeat(2,1fr); }
+  .die-guide-grid article { min-height:210px; padding:22px; }
+  .die-guide-grid h3 { margin-top:54px; }
 }
