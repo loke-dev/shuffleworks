@@ -1,6 +1,5 @@
 import './style.css'
-import { ShuffleEngine } from './engine/ShuffleEngine'
-import { TeamMode } from './modes/teams/TeamMode'
+import { loadMode } from './modes/registry'
 import { createShell } from './shell/createShell'
 
 const root = document.querySelector<HTMLDivElement>('#app')
@@ -8,8 +7,11 @@ const root = document.querySelector<HTMLDivElement>('#app')
 if (!root) throw new Error('Shuffleworks root not found')
 
 const shell = createShell(root)
+const [{ ShuffleEngine }, teams] = await Promise.all([
+  import('./engine/ShuffleEngine'),
+  loadMode('teams', shell),
+])
 const engine = new ShuffleEngine(shell.canvas)
-const teams = new TeamMode(shell)
 
 await engine.start(teams)
 shell.setReady()

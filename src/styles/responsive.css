@@ -1,0 +1,9 @@
+@media (max-width: 760px) {
+  .experience { min-height: 100svh; }
+  .scene-copy { top: 94px; }
+  .scene-copy h1 { font-size: clamp(2.7rem, 11.5vw, 4rem); }
+  .world { inset-block: 245px 120px; }
+  .versus { bottom: 43%; }
+  .field-notes { grid-template-columns: 1fr; gap: 52px; padding: 84px 22px; }
+  .field-notes h2 { font-size: clamp(2.9rem, 13vw, 4.6rem); }
+}

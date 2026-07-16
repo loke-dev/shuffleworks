@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { createViewport, preferredFrameInterval } from './quality'
 import type { ShuffleMode, ShuffleResult, Viewport } from './types'
 
 export class ShuffleEngine {
@@ -7,8 +8,12 @@ export class ShuffleEngine {
   private readonly renderer: THREE.WebGLRenderer
   private mode: ShuffleMode | null = null
   private previousTime = 0
+  private previousFrame = 0
+  private frameInterval = 1000 / 60
   private resizeObserver: ResizeObserver
+  private intersectionObserver: IntersectionObserver
   private visible = true
+  private intersecting = true
 
   private readonly canvas: HTMLCanvasElement
 
@@ -23,12 +28,15 @@ export class ShuffleEngine {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping
     this.renderer.toneMappingExposure = 1.15
-    this.renderer.shadowMap.enabled = true
-    this.renderer.shadowMap.type = THREE.PCFShadowMap
     this.camera.position.set(0, 0, 10)
 
     this.resizeObserver = new ResizeObserver(() => this.resize())
     this.resizeObserver.observe(canvas.parentElement ?? canvas)
+    this.intersectionObserver = new IntersectionObserver(([entry]) => {
+      this.intersecting = entry.isIntersecting
+      this.previousTime = performance.now()
+    }, { rootMargin: '160px' })
+    this.intersectionObserver.observe(canvas)
     document.addEventListener('visibilitychange', this.handleVisibility)
   }
 
@@ -55,21 +63,14 @@ export class ShuffleEngine {
   }
 
   private viewport(): Viewport {
-    // The canvas intentionally bleeds beyond the visual stage so foreground
-    // cards can leave it without being clipped by the WebGL drawing buffer.
-    const bounds = this.canvas.getBoundingClientRect()
-    return {
-      width: Math.max(bounds.width, 1),
-      height: Math.max(bounds.height, 1),
-      pixelRatio: Math.min(window.devicePixelRatio, 1.75),
-      compact: bounds.width < 760,
-    }
+    return createViewport(this.canvas)
   }
 
   private resize() {
     const viewport = this.viewport()
     this.renderer.setPixelRatio(viewport.pixelRatio)
     this.renderer.setSize(viewport.width, viewport.height, false)
+    this.frameInterval = preferredFrameInterval(viewport)
     this.camera.aspect = viewport.width / viewport.height
     this.camera.updateProjectionMatrix()
     this.mode?.resize(viewport)
@@ -78,9 +79,10 @@ export class ShuffleEngine {
 
   private animate = (now: number) => {
     requestAnimationFrame(this.animate)
-    if (!this.visible) return
+    if (!this.visible || !this.intersecting || now - this.previousFrame < this.frameInterval) return
     const delta = Math.min((now - this.previousTime) / 1000, 0.05)
     this.previousTime = now
+    this.previousFrame = now
     this.mode?.update(now / 1000, delta)
     this.render()
   }

@@ -1,0 +1,23 @@
+:root {
+  color-scheme: dark;
+  --ink: #05060a;
+  --surface: #090a0f;
+  --paper: #f4f6fb;
+  --muted: rgba(238, 242, 255, 0.54);
+  --line: rgba(238, 242, 255, 0.13);
+  --purple: #a974ff;
+  --blue: #38a0ff;
+  --yellow: #ffd84f;
+  --red: #ff625b;
+  --sans: "Manrope Variable", system-ui, sans-serif;
+  --mono: "DM Mono", monospace;
+  font-family: var(--sans);
+  color: var(--paper);
+  background: var(--ink);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--ink); overscroll-behavior-y: none; }

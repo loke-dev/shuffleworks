@@ -1,0 +1,43 @@
+/* Stage-specific refinements live separately from the structural shell. */
+.scene-copy {
+  top: 112px;
+}
+
+.scene-copy h1 {
+  font-size: clamp(3rem, 5.5vw, 5.8rem);
+}
+
+.world {
+  inset-block: 76px 104px;
+}
+
+.versus {
+  bottom: 12.5%;
+}
+
+.versus span {
+  width: 58px;
+  height: 25px;
+  border: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 0.56rem;
+  text-shadow: 0 1px 8px #05060a;
+}
+
+.versus:before,
+.versus:after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  width: clamp(34px, 4vw, 62px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22));
+}
+
+.versus:before { right: 100%; }
+.versus:after { left: 100%; transform: rotate(180deg); }
