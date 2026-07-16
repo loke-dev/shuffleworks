@@ -111,23 +111,18 @@ export class TeamMode implements ShuffleMode {
 
     this.cards.forEach((card, index) => {
       card.target.copy(targetById.get(card.data.id)!)
-      const side = index % 2 === 0 ? -1 : 1
-      const lane = index < 2 ? 1 : -1
+      const fan = index - (this.cards.length - 1) / 2
       const start = card.object.position.clone()
-      const gather = new THREE.Vector3(side * 0.32, 0.28, 1)
-      const orbit = new THREE.Vector3(
-        -side * ((this.viewport.compact ? 1.55 : 2.15) + index * 0.1),
-        lane * (this.viewport.compact ? 1.65 : 1.6),
-        1.35,
-      )
-      const apex = new THREE.Vector3(side * 0.75, 1.75 - index * 0.1, 1.55)
+      const gather = new THREE.Vector3(fan * 0.05, fan * 0.025, 0.72 + index * 0.045)
+      const orbit = new THREE.Vector3(fan * 0.13, 0.28 + Math.abs(fan) * 0.025, 1 + index * 0.045)
+      const apex = new THREE.Vector3(fan * 0.19, 0.58 - Math.abs(fan) * 0.03, 1.16 + index * 0.04)
       const settle = card.target.clone().lerp(new THREE.Vector3(0, 0.28, 0.7), 0.16)
       card.animation = {
         curve: new THREE.CatmullRomCurve3([start, gather, orbit, apex, settle, card.target.clone()], false, 'centripetal'),
         startedAt: this.elapsed,
-        delay: index * 0.075,
-        duration: 2.15,
-        turns: index % 2 === 0 ? 1 : 2,
+        delay: index * 0.025,
+        duration: 2.3,
+        turns: 1,
         startRotation: card.object.rotation.clone(),
       }
     })
@@ -151,11 +146,11 @@ export class TeamMode implements ShuffleMode {
         if (raw < 1) {
           active += 1
           const linear = THREE.MathUtils.clamp(raw, 0, 1)
-          const progress = this.easeInOutQuint(linear)
+          const progress = this.smoothstep(linear)
           const lift = Math.sin(linear * Math.PI) ** 2
           energy = Math.max(energy, lift)
           card.object.position.copy(animation.curve.getPoint(progress))
-          card.object.position.z += lift * 1.35
+          card.object.position.z += lift * 0.82
           card.object.rotation.x = THREE.MathUtils.lerp(animation.startRotation.x, card.homeRotation.x, progress)
             + Math.sin(linear * Math.PI * 2) * lift * 0.34
           card.object.rotation.y = THREE.MathUtils.lerp(animation.startRotation.y, 0, progress)
@@ -179,9 +174,9 @@ export class TeamMode implements ShuffleMode {
     })
 
     this.haloEnergy += (energy - this.haloEnergy) * 0.13
-    this.context.camera.position.z = this.baseCameraZ - this.haloEnergy * 0.35
-    this.context.camera.position.y = this.haloEnergy * 0.1
-    this.context.camera.lookAt(0, this.haloEnergy * 0.07, 0)
+    this.context.camera.position.z = this.baseCameraZ - this.haloEnergy * 0.2
+    this.context.camera.position.y = this.haloEnergy * 0.05
+    this.context.camera.lookAt(0, this.haloEnergy * 0.035, 0)
     this.root.rotation.z = Math.sin(elapsed * 5) * this.haloEnergy * 0.018
     this.halo.material.opacity = this.haloEnergy * 0.4
     this.halo.rotation.z = elapsed * 0.55
@@ -352,10 +347,6 @@ export class TeamMode implements ShuffleMode {
       groups,
       announcement: groups.map((group) => `${group.label}: ${group.items.map((item) => item.label).join(' and ')}`).join('. '),
     }
-  }
-
-  private easeInOutQuint(value: number) {
-    return value < 0.5 ? 16 * value ** 5 : 1 - (-2 * value + 2) ** 5 / 2
   }
 
   private easeOutCubic(value: number) {
