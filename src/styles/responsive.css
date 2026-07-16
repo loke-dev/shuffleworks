@@ -29,6 +29,7 @@
   .dice-copy { top:104px; left:18px; }
   .dice-copy h1 { font-size:clamp(3rem,13vw,4.7rem); }
   .dice-world { inset:235px 0 360px; }
+  .dice-total { top:auto; right:16px; bottom:12px; }
   .dice-controls { min-height:360px; grid-template-columns:minmax(0,1fr) !important; align-content:center; gap:20px; padding:22px 16px; }
   .dice-controls fieldset,.dice-roll { grid-column:1; }
   .dice-roll { min-width:0; width:100%; }

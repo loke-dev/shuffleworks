@@ -14,7 +14,7 @@ export function createDiceShell(root: HTMLElement): DiceShell {
       <section class="dice-experience" aria-labelledby="dice-title">
         <header class="topbar">${brandMarkup()}${navigationMarkup('dice')}<div class="mode-index"><span>Polyhedra</span><b>02</b></div></header>
         <div class="dice-copy"><p class="eyebrow">A configurable physics roll</p><h1 id="dice-title">Give chance<br><em>some weight.</em></h1></div>
-        <div class="dice-world"><div class="dice-aura" aria-hidden="true"></div><canvas aria-label="Interactive 3D dice roll"></canvas><p class="render-label">Realtime polyhedra / WebGL</p></div>
+        <div class="dice-world"><div class="dice-aura" aria-hidden="true"></div><canvas aria-label="Interactive 3D dice roll"></canvas><p class="dice-total"><span>Total</span><b data-dice-total>—</b></p><p class="render-label">Realtime polyhedra / WebGL</p></div>
         <div class="dice-controls" aria-label="Dice configuration">
           <fieldset><legend>How many</legend><div class="option-row" data-count-options>${[1,2,3,4,5,6].map((n) => `<button type="button" data-count="${n}" ${n === 2 ? 'aria-pressed="true"' : 'aria-pressed="false"'}>${n}</button>`).join('')}</div></fieldset>
           <fieldset><legend>Die type</legend><div class="option-row die-types">${[4,6,8,10,12,20].map((n) => `<button type="button" data-sides="${n}" ${n === 6 ? 'aria-pressed="true"' : 'aria-pressed="false"'}>D${n}</button>`).join('')}</div></fieldset>
@@ -42,6 +42,7 @@ export function createDiceShell(root: HTMLElement): DiceShell {
   const resultGrid = root.querySelector<HTMLElement>('.dice-result-grid')!
   const resultTitle = root.querySelector<HTMLElement>('#dice-result-title')!
   const announcement = root.querySelector<HTMLElement>('[data-announcement]')!
+  const totalDisplay = root.querySelector<HTMLElement>('[data-dice-total]')!
   let current: DiceOptions = { count: 2, sides: 6 }
   const optionHandlers: Array<(options: DiceOptions) => void> = []
 
@@ -64,11 +65,13 @@ export function createDiceShell(root: HTMLElement): DiceShell {
       root.classList.toggle('is-shuffling', active)
       rollButton.disabled = active
       rollLabel.textContent = active ? 'Dice in motion…' : 'Roll dice'
+      if (active) totalDisplay.textContent = '…'
       root.querySelectorAll<HTMLButtonElement>('.option-row button').forEach((button) => { button.disabled = active })
     },
     renderResult(result: ShuffleResult) {
       const group = result.groups[0]
       const total = group.items.reduce((sum, item) => sum + Number(item.label), 0)
+      totalDisplay.textContent = String(total)
       resultTitle.innerHTML = `Total<br>${total}.`
       resultGrid.innerHTML = `<header><span>${group.label}</span><b>${group.items.length} dice</b></header><ul>${group.items.map((item, index) => `<li><i style="--die-color:${item.color}"></i><span>Die ${index + 1}</span><b>${item.label}</b></li>`).join('')}</ul>`
       announcement.textContent = result.announcement

@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { ResourceStore } from '../../engine/resources'
 import type { ModeContext, ShuffleMode, ShuffleResult, Viewport } from '../../engine/types'
-import { smoothstep } from '../teams/choreography'
+import { easeOutCubic, smoothstep } from '../teams/choreography'
 import { createDieGeometry } from './geometry'
 import { dieTypes, type DiceOptions, type DieSides } from './types'
 
@@ -10,10 +10,13 @@ type Die = {
   mesh: THREE.Mesh
   label: THREE.Sprite
   labelTexture: THREE.CanvasTexture
+  labelMaterial: THREE.SpriteMaterial
+  pips: THREE.Group
   target: THREE.Vector3
   start: THREE.Vector3
   startRotation: THREE.Euler
   endRotation: THREE.Euler
+  landingRotation: THREE.Euler
   delay: number
   value: number
 }
@@ -31,8 +34,10 @@ export class DiceMode implements ShuffleMode {
   private options: DiceOptions
   private elapsed = 0
   private rollingAt = -1
-  private duration = 1.95
+  private duration = 2.45
   private resolveRoll: ((result: ShuffleResult) => void) | null = null
+  private pipGeometry!: THREE.PlaneGeometry
+  private pipMaterials = new Map<number, THREE.MeshBasicMaterial>()
 
   constructor(options: DiceOptions) {
     this.options = options
@@ -51,6 +56,7 @@ export class DiceMode implements ShuffleMode {
     this.root.add(key, violet, blue)
 
     dieTypes.forEach((sides) => this.geometries.set(sides, this.resources.add(createDieGeometry(sides))))
+    this.createPipResources()
     this.dice = Array.from({ length: 6 }, (_, index) => this.createDie(index))
     this.resize(context.viewport)
     this.applyOptions()
@@ -74,14 +80,16 @@ export class DiceMode implements ShuffleMode {
     this.dice.slice(0, this.options.count).forEach((die, index) => {
       die.start.copy(die.group.position)
       die.startRotation.copy(die.group.rotation)
+      die.landingRotation.set(-0.16, 0.24 * (index - (this.options.count - 1) / 2), 0.06 * (index % 2 ? 1 : -1))
       die.endRotation.set(
-        (3 + index % 3) * Math.PI + Math.random() * Math.PI,
-        (4 + index % 2) * Math.PI + Math.random() * Math.PI,
-        (2 + index % 4) * Math.PI + Math.random() * Math.PI,
+        die.landingRotation.x + (3 + index % 3) * Math.PI * 2,
+        die.landingRotation.y + (4 + index % 2) * Math.PI * 2,
+        die.landingRotation.z + (2 + index % 3) * Math.PI * 2,
       )
       die.delay = index * 0.055
       die.value = 1 + Math.floor(Math.random() * this.options.sides)
       die.label.visible = false
+      die.labelMaterial.opacity = 0
     })
     return new Promise((resolve) => { this.resolveRoll = resolve })
   }
@@ -97,29 +105,36 @@ export class DiceMode implements ShuffleMode {
     }
 
     let active = 0
-    this.dice.slice(0, this.options.count).forEach((die, index) => {
+    this.dice.slice(0, this.options.count).forEach((die) => {
       const linear = (elapsed - this.rollingAt - die.delay) / this.duration
       if (linear < 0) { active += 1; return }
       if (linear < 1) {
         active += 1
         const progress = smoothstep(linear)
-        const arc = Math.sin(Math.PI * linear)
+        const rotationProgress = easeOutCubic(linear)
+        const arc = Math.sin(Math.PI * linear) ** 2
         const wobble = Math.sin(linear * Math.PI * 3) * (1 - linear)
+        const settleProgress = THREE.MathUtils.clamp((linear - 0.72) / 0.28, 0, 1)
+        const settleHop = Math.sin(Math.PI * settleProgress) ** 2 * (1 - settleProgress)
         die.group.position.lerpVectors(die.start, die.target, progress)
-        die.group.position.y += arc * (this.viewport.compact ? 1.45 : 1.8) + Math.abs(wobble) * 0.28
-        die.group.position.z = arc * 1.65
+        die.group.position.y += arc * (this.viewport.compact ? 1.45 : 1.8) + Math.abs(wobble) * 0.16 + settleHop * 0.2
+        die.group.position.z = arc * 1.65 + settleHop * 0.12
         die.group.rotation.set(
-          THREE.MathUtils.lerp(die.startRotation.x, die.endRotation.x, progress),
-          THREE.MathUtils.lerp(die.startRotation.y, die.endRotation.y, progress),
-          THREE.MathUtils.lerp(die.startRotation.z, die.endRotation.z, progress),
+          THREE.MathUtils.lerp(die.startRotation.x, die.endRotation.x, rotationProgress),
+          THREE.MathUtils.lerp(die.startRotation.y, die.endRotation.y, rotationProgress),
+          THREE.MathUtils.lerp(die.startRotation.z, die.endRotation.z, rotationProgress),
         )
+        const labelProgress = smoothstep((linear - 0.82) / 0.18)
+        die.label.visible = labelProgress > 0
+        die.labelMaterial.opacity = labelProgress
         return
       }
       die.group.position.copy(die.target)
       die.group.position.z = 0
-      die.group.rotation.set(-0.16, 0.24 * (index - (this.options.count - 1) / 2), 0.06 * (index % 2 ? 1 : -1))
+      die.group.rotation.copy(die.landingRotation)
       this.updateLabel(die)
       die.label.visible = true
+      die.labelMaterial.opacity = 1
     })
 
     if (active === 0) {
@@ -144,6 +159,7 @@ export class DiceMode implements ShuffleMode {
     this.dice.forEach((die, index) => {
       die.group.visible = index < this.options.count
       die.mesh.geometry = geometry
+      die.pips.visible = this.options.sides === 6
       die.value = Math.min(die.value || index + 1, this.options.sides)
       this.updateLabel(die)
       die.label.visible = index < this.options.count
@@ -156,11 +172,12 @@ export class DiceMode implements ShuffleMode {
     const compact = this.viewport?.compact ?? false
     const columns = compact ? Math.min(count, 2) : Math.min(count, 3)
     const rows = Math.ceil(count / columns)
-    const gapX = compact ? 1.62 : 2.55
-    const gapY = compact ? count > 4 ? 0.88 : 2.05 : 2.35
+    const crowded = count >= 4
+    const gapX = compact ? 1.52 : crowded ? 2.15 : 2.55
+    const gapY = compact ? count > 4 ? 0.82 : crowded ? 1.58 : 2.05 : crowded ? 1.8 : 2.35
     const scale = compact
-      ? count === 1 ? 0.88 : count === 2 ? 0.68 : count <= 4 ? 0.6 : 0.38
-      : count <= 2 ? 1.05 : count <= 4 ? 0.86 : 0.72
+      ? count === 1 ? 0.88 : count === 2 ? 0.68 : count <= 3 ? 0.58 : count === 4 ? 0.5 : 0.36
+      : count <= 2 ? 1.05 : count === 3 ? 0.82 : count === 4 ? 0.68 : 0.58
     this.dice.forEach((die, index) => {
       const row = Math.floor(index / columns)
       const inRow = Math.min(columns, count - row * columns)
@@ -185,7 +202,7 @@ export class DiceMode implements ShuffleMode {
       opacity: 0.94,
       clearcoat: 1,
       clearcoatRoughness: 0.06,
-      flatShading: true,
+      flatShading: false,
     }))
     const mesh = new THREE.Mesh(this.geometries.get(this.options.sides)!, material)
     const labelTexture = this.resources.add(new THREE.CanvasTexture(document.createElement('canvas')))
@@ -194,12 +211,60 @@ export class DiceMode implements ShuffleMode {
     label.position.set(0, 0, 1.45)
     label.scale.set(0.78, 0.78, 1)
     label.renderOrder = 4
-    group.add(mesh, label)
+    const pips = this.createPipFaces()
+    group.add(mesh, pips, label)
     this.root.add(group)
     return {
-      group, mesh, label, labelTexture, target: new THREE.Vector3(), start: new THREE.Vector3(),
-      startRotation: new THREE.Euler(), endRotation: new THREE.Euler(), delay: 0, value: index + 1,
+      group, mesh, label, labelTexture, labelMaterial, pips, target: new THREE.Vector3(), start: new THREE.Vector3(),
+      startRotation: new THREE.Euler(), endRotation: new THREE.Euler(), landingRotation: new THREE.Euler(), delay: 0, value: index + 1,
     }
+  }
+
+  private createPipResources() {
+    this.pipGeometry = this.resources.add(new THREE.PlaneGeometry(1.16, 1.16))
+    for (let value = 1; value <= 6; value += 1) {
+      const canvas = document.createElement('canvas')
+      canvas.width = 192
+      canvas.height = 192
+      const context = canvas.getContext('2d')!
+      const positions: Record<number, number[][]> = {
+        1: [[0, 0]], 2: [[-1, -1], [1, 1]], 3: [[-1, -1], [0, 0], [1, 1]],
+        4: [[-1, -1], [1, -1], [-1, 1], [1, 1]],
+        5: [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]],
+        6: [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]],
+      }
+      context.fillStyle = 'rgba(255,255,255,.92)'
+      positions[value].forEach(([x, y]) => {
+        context.beginPath()
+        context.arc(96 + x * 49, 96 + y * 49, 13, 0, Math.PI * 2)
+        context.fill()
+      })
+      const texture = this.resources.add(new THREE.CanvasTexture(canvas))
+      texture.colorSpace = THREE.SRGBColorSpace
+      this.pipMaterials.set(value, this.resources.add(new THREE.MeshBasicMaterial({
+        map: texture, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2,
+      })))
+    }
+  }
+
+  private createPipFaces() {
+    const group = new THREE.Group()
+    const definitions = [
+      { value: 1, position: [0, 0, 0.786], rotation: [0, 0, 0] },
+      { value: 6, position: [0, 0, -0.786], rotation: [0, Math.PI, 0] },
+      { value: 3, position: [0.786, 0, 0], rotation: [0, Math.PI / 2, 0] },
+      { value: 4, position: [-0.786, 0, 0], rotation: [0, -Math.PI / 2, 0] },
+      { value: 2, position: [0, 0.786, 0], rotation: [-Math.PI / 2, 0, 0] },
+      { value: 5, position: [0, -0.786, 0], rotation: [Math.PI / 2, 0, 0] },
+    ]
+    definitions.forEach(({ value, position, rotation }) => {
+      const face = new THREE.Mesh(this.pipGeometry, this.pipMaterials.get(value))
+      face.position.set(position[0], position[1], position[2])
+      face.rotation.set(rotation[0], rotation[1], rotation[2])
+      face.renderOrder = 3
+      group.add(face)
+    })
+    return group
   }
 
   private updateLabel(die: Die) {
