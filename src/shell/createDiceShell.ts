@@ -1,5 +1,6 @@
 import type { ShuffleResult } from '../engine/types'
 import type { DiceOptions, DieSides } from '../modes/dice/types'
+import { clearSavedDiceHistory, DICE_HISTORY_LIMIT, loadDiceHistory, saveDiceHistory, type DiceHistoryEntry } from './diceHistory'
 import { footerMarkup, navigationMarkup, brandMarkup } from './shared'
 import type { AppShell } from './types'
 
@@ -24,7 +25,10 @@ export function createDiceShell(root: HTMLElement): DiceShell {
 
       <section class="dice-result" aria-labelledby="dice-result-title">
         <div><p class="eyebrow">Latest outcome</p><h2 id="dice-result-title">Ready when<br>you are.</h2></div>
-        <div class="dice-result-grid" aria-live="polite"><p>Choose a setup and roll the room.</p></div>
+        <div class="dice-history-panel" aria-live="polite">
+          <header><div><span>Roll history</span><b>Last ${DICE_HISTORY_LIMIT}</b></div><button type="button" data-clear-history>Clear history</button></header>
+          <ol class="dice-history" data-dice-history></ol>
+        </div>
       </section>
 
       <section class="dice-guide" aria-labelledby="dice-guide-title">
@@ -39,12 +43,28 @@ export function createDiceShell(root: HTMLElement): DiceShell {
   const canvas = root.querySelector<HTMLCanvasElement>('canvas')!
   const rollButton = root.querySelector<HTMLButtonElement>('[data-shuffle]')!
   const rollLabel = rollButton.querySelector<HTMLElement>('span')!
-  const resultGrid = root.querySelector<HTMLElement>('.dice-result-grid')!
+  const historyList = root.querySelector<HTMLOListElement>('[data-dice-history]')!
+  const clearHistoryButton = root.querySelector<HTMLButtonElement>('[data-clear-history]')!
   const resultTitle = root.querySelector<HTMLElement>('#dice-result-title')!
   const announcement = root.querySelector<HTMLElement>('[data-announcement]')!
   const totalDisplay = root.querySelector<HTMLElement>('[data-dice-total]')!
   let current: DiceOptions = { count: 2, sides: 6 }
+  let history = loadDiceHistory()
   const optionHandlers: Array<(options: DiceOptions) => void> = []
+
+  const renderHistory = () => {
+    clearHistoryButton.disabled = history.length === 0
+    if (history.length === 0) {
+      historyList.innerHTML = '<li class="dice-history-empty"><b>No rolls yet.</b><span>Your latest 25 rolls will stay on this device.</span></li>'
+      resultTitle.innerHTML = 'Ready when<br>you are.'
+      totalDisplay.textContent = '—'
+      return
+    }
+    const latest = history[0]
+    resultTitle.innerHTML = `Total<br>${latest.total}.`
+    totalDisplay.textContent = String(latest.total)
+    historyList.innerHTML = history.map((entry, index) => historyEntryMarkup(entry, index)).join('')
+  }
 
   const updateOptions = (next: DiceOptions) => {
     current = next
@@ -55,6 +75,13 @@ export function createDiceShell(root: HTMLElement): DiceShell {
 
   root.querySelectorAll<HTMLButtonElement>('[data-count]').forEach((button) => button.addEventListener('click', () => updateOptions({ ...current, count: Number(button.dataset.count) })))
   root.querySelectorAll<HTMLButtonElement>('[data-sides]').forEach((button) => button.addEventListener('click', () => updateOptions({ ...current, sides: Number(button.dataset.sides) as DieSides })))
+  clearHistoryButton.addEventListener('click', () => {
+    history = []
+    clearSavedDiceHistory()
+    renderHistory()
+    announcement.textContent = 'Dice roll history cleared.'
+  })
+  renderHistory()
 
   return {
     canvas,
@@ -70,12 +97,24 @@ export function createDiceShell(root: HTMLElement): DiceShell {
     },
     renderResult(result: ShuffleResult) {
       const group = result.groups[0]
-      const total = group.items.reduce((sum, item) => sum + Number(item.label), 0)
+      const values = group.items.map((item) => Number(item.label))
+      const total = values.reduce((sum, value) => sum + value, 0)
+      history = [{ id: crypto.randomUUID(), sides: current.sides, values, total, createdAt: Date.now() }, ...history].slice(0, DICE_HISTORY_LIMIT)
+      saveDiceHistory(history)
       totalDisplay.textContent = String(total)
       resultTitle.innerHTML = `Total<br>${total}.`
-      resultGrid.innerHTML = `<header><span>${group.label}</span><b>${group.items.length} dice</b></header><ul>${group.items.map((item, index) => `<li><i style="--die-color:${item.color}"></i><span>Die ${index + 1}</span><b>${item.label}</b></li>`).join('')}</ul>`
+      renderHistory()
       announcement.textContent = result.announcement
     },
     onShuffle(handler) { rollButton.addEventListener('click', handler) },
   }
+}
+
+function historyEntryMarkup(entry: DiceHistoryEntry, index: number) {
+  const time = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' }).format(entry.createdAt)
+  return `<li class="dice-history-entry${index === 0 ? ' is-latest' : ''}">
+    <div class="dice-history-meta"><b>${index === 0 ? 'Latest' : `#${String(index + 1).padStart(2, '0')}`}</b><span>D${entry.sides} · ${entry.values.length} ${entry.values.length === 1 ? 'die' : 'dice'}</span><time datetime="${new Date(entry.createdAt).toISOString()}">${time}</time></div>
+    <div class="dice-history-faces" aria-label="Faces: ${entry.values.join(', ')}">${entry.values.map((value) => `<i>${value}</i>`).join('')}</div>
+    <div class="dice-history-total"><span>Total</span><b>${entry.total}</b></div>
+  </li>`
 }

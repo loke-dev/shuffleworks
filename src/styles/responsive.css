@@ -34,7 +34,9 @@
   .dice-controls fieldset,.dice-roll { grid-column:1; }
   .dice-roll { min-width:0; width:100%; }
   .dice-result { grid-template-columns:1fr; gap:52px; padding:90px 22px; }
-  .dice-result-grid ul { grid-template-columns:repeat(2,1fr); }
+  .dice-history-entry { grid-template-columns:1fr auto; gap:14px; padding:18px; }
+  .dice-history-faces { grid-column:1 / -1; grid-row:2; }
+  .dice-history-total { grid-column:2; grid-row:1; }
   .dice-guide { padding:90px 12px; }
   .dice-guide > header { grid-template-columns:1fr; gap:30px; margin-bottom:60px; }
   .dice-guide h2,.dice-result h2 { font-size:clamp(3rem,13vw,4.7rem); }
