@@ -395,22 +395,22 @@ function drawEngravedText(context: CanvasRenderingContext2D, text: string, x: nu
 
 function drawEngravedDot(context: CanvasRenderingContext2D, x: number, y: number, radius: number) {
   context.save()
-  context.shadowColor = 'rgba(0,0,0,.27)'
-  context.shadowBlur = 4
-  context.shadowOffsetY = 1.5
+  context.shadowColor = 'rgba(0,0,0,.3)'
+  context.shadowBlur = 2
+  context.shadowOffsetY = 1
   context.beginPath()
-  context.arc(x, y, radius, 0, Math.PI * 2)
-  const inset = context.createRadialGradient(x, y - 2, radius * 0.15, x, y, radius)
-  inset.addColorStop(0, 'rgba(10,13,21,.39)')
-  inset.addColorStop(0.68, 'rgba(10,13,21,.43)')
-  inset.addColorStop(1, 'rgba(10,13,21,.22)')
+  context.arc(x, y, radius - 0.5, 0, Math.PI * 2)
+  const inset = context.createRadialGradient(x, y - 1.5, radius * 0.1, x, y, radius)
+  inset.addColorStop(0, 'rgba(7,10,17,.5)')
+  inset.addColorStop(0.78, 'rgba(7,10,17,.53)')
+  inset.addColorStop(1, 'rgba(7,10,17,.34)')
   context.fillStyle = inset
   context.fill()
   context.shadowColor = 'transparent'
   context.beginPath()
-  context.arc(x, y, radius - 0.75, 0.15 * Math.PI, 0.85 * Math.PI)
-  context.lineWidth = 1.5
-  context.strokeStyle = 'rgba(255,255,255,.17)'
+  context.arc(x, y, radius - 1.25, 0.16 * Math.PI, 0.84 * Math.PI)
+  context.lineWidth = 1.25
+  context.strokeStyle = 'rgba(255,255,255,.2)'
   context.stroke()
   context.restore()
 }
