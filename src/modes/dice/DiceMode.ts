@@ -381,46 +381,47 @@ function cubeFaces(): DieFace[] {
 
 function drawEngravedText(context: CanvasRenderingContext2D, text: string, x: number, y: number) {
   context.save()
-  context.shadowColor = 'rgba(0,0,0,.9)'
-  context.shadowBlur = 9
-  context.shadowOffsetY = 5
-  context.lineWidth = 5
-  context.strokeStyle = 'rgba(0,0,0,.72)'
-  context.strokeText(text, x, y)
-  context.fillStyle = 'rgba(18,20,29,.9)'
+  context.fillStyle = 'rgba(255,255,255,.2)'
+  context.fillText(text, x, y + 1.5)
+  context.shadowColor = 'rgba(0,0,0,.24)'
+  context.shadowBlur = 2
+  context.shadowOffsetY = 1
+  context.fillStyle = 'rgba(12,15,24,.34)'
   context.fillText(text, x, y)
   context.shadowColor = 'transparent'
-  context.lineWidth = 2
-  context.strokeStyle = 'rgba(255,255,255,.48)'
-  context.strokeText(text, x, y + 1)
   context.restore()
 }
 
 function drawEngravedDot(context: CanvasRenderingContext2D, x: number, y: number, radius: number) {
   context.save()
-  context.shadowColor = 'rgba(0,0,0,.92)'
-  context.shadowBlur = 8
-  context.shadowOffsetY = 4
+  context.shadowColor = 'rgba(0,0,0,.22)'
+  context.shadowBlur = 2
+  context.shadowOffsetY = 1
   context.beginPath()
   context.arc(x, y, radius, 0, Math.PI * 2)
-  context.fillStyle = 'rgba(16,18,26,.9)'
+  const inset = context.createRadialGradient(x, y - 2, radius * 0.15, x, y, radius)
+  inset.addColorStop(0, 'rgba(10,13,21,.3)')
+  inset.addColorStop(0.72, 'rgba(10,13,21,.34)')
+  inset.addColorStop(1, 'rgba(10,13,21,.16)')
+  context.fillStyle = inset
   context.fill()
   context.shadowColor = 'transparent'
-  context.lineWidth = 2
-  context.strokeStyle = 'rgba(255,255,255,.48)'
+  context.beginPath()
+  context.arc(x, y, radius - 0.75, 0.15 * Math.PI, 0.85 * Math.PI)
+  context.lineWidth = 1.5
+  context.strokeStyle = 'rgba(255,255,255,.22)'
   context.stroke()
   context.restore()
 }
 
 function drawEngravedLine(context: CanvasRenderingContext2D, x: number, y: number, width: number) {
   context.save()
-  context.shadowColor = 'rgba(0,0,0,.9)'
-  context.shadowBlur = 6
-  context.shadowOffsetY = 3
-  context.fillStyle = 'rgba(16,18,26,.9)'
-  context.fillRect(x, y, width, 6)
-  context.shadowColor = 'transparent'
-  context.fillStyle = 'rgba(255,255,255,.42)'
-  context.fillRect(x, y + 5, width, 2)
+  context.fillStyle = 'rgba(255,255,255,.2)'
+  context.fillRect(x, y + 1.5, width, 3)
+  context.shadowColor = 'rgba(0,0,0,.22)'
+  context.shadowBlur = 2
+  context.shadowOffsetY = 1
+  context.fillStyle = 'rgba(12,15,24,.34)'
+  context.fillRect(x, y, width, 3)
   context.restore()
 }
