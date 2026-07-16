@@ -1,0 +1,26 @@
+{
+  "name": "shuffleworks",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Beautiful, tactile shuffle tools for teams, games, and chance.",
+  "packageManager": "pnpm@11.13.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "deploy": "pnpm build && wrangler pages deploy dist --project-name shuffleworks",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/three": "^0.185.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.1",
+    "wrangler": "^4.111.0"
+  },
+  "dependencies": {
+    "@fontsource-variable/manrope": "^5.2.8",
+    "@fontsource/dm-mono": "^5.2.7",
+    "three": "^0.185.1"
+  }
+}
