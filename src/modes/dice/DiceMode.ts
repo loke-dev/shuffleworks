@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { ResourceStore } from '../../engine/resources'
 import type { ModeContext, ShuffleMode, ShuffleResult, Viewport } from '../../engine/types'
 import { easeOutCubic, smoothstep } from '../teams/choreography'
+import { getDieFaces, type DieFace } from './faces'
 import { createDieGeometry } from './geometry'
 import { dieTypes, type DiceOptions, type DieSides } from './types'
 
@@ -13,6 +14,7 @@ type Die = {
   labelTexture: THREE.CanvasTexture
   labelMaterial: THREE.SpriteMaterial
   pips: THREE.Group
+  numberedFaces: Map<DieSides, THREE.Group>
   target: THREE.Vector3
   start: THREE.Vector3
   startRotation: THREE.Euler
@@ -39,6 +41,9 @@ export class DiceMode implements ShuffleMode {
   private resolveRoll: ((result: ShuffleResult) => void) | null = null
   private pipGeometry!: THREE.PlaneGeometry
   private pipMaterials = new Map<number, THREE.MeshBasicMaterial>()
+  private numberGeometry!: THREE.PlaneGeometry
+  private numberMaterials = new Map<string, THREE.MeshBasicMaterial>()
+  private faceDefinitions = new Map<DieSides, DieFace[]>()
 
   constructor(options: DiceOptions) {
     this.options = options
@@ -56,8 +61,13 @@ export class DiceMode implements ShuffleMode {
     blue.position.set(4, -1, 4)
     this.root.add(key, violet, blue)
 
-    dieTypes.forEach((sides) => this.geometries.set(sides, this.resources.add(createDieGeometry(sides))))
+    dieTypes.forEach((sides) => {
+      const geometry = this.resources.add(createDieGeometry(sides))
+      this.geometries.set(sides, geometry)
+      this.faceDefinitions.set(sides, getDieFaces(geometry, sides))
+    })
     this.createPipResources()
+    this.createNumberResources()
     this.dice = Array.from({ length: 6 }, (_, index) => this.createDie(index))
     this.resize(context.viewport)
     this.applyOptions()
@@ -125,8 +135,8 @@ export class DiceMode implements ShuffleMode {
           THREE.MathUtils.lerp(die.startRotation.y, die.endRotation.y, rotationProgress),
           THREE.MathUtils.lerp(die.startRotation.z, die.endRotation.z, rotationProgress),
         )
-        const labelProgress = smoothstep((linear - 0.82) / 0.18)
-        die.label.visible = labelProgress > 0
+        const labelProgress = this.options.sides === 6 ? smoothstep((linear - 0.82) / 0.18) : 0
+        die.label.visible = this.options.sides === 6 && labelProgress > 0
         die.labelMaterial.opacity = labelProgress
         return
       }
@@ -134,7 +144,7 @@ export class DiceMode implements ShuffleMode {
       die.group.position.z = 0
       die.body.rotation.copy(die.landingRotation)
       this.updateLabel(die)
-      die.label.visible = true
+      die.label.visible = this.options.sides === 6
       die.labelMaterial.opacity = 1
     })
 
@@ -161,10 +171,11 @@ export class DiceMode implements ShuffleMode {
       die.group.visible = index < this.options.count
       die.mesh.geometry = geometry
       die.pips.visible = this.options.sides === 6
+      die.numberedFaces.forEach((faces, sides) => { faces.visible = sides === this.options.sides })
       die.value = Math.min(die.value || index + 1, this.options.sides)
       if (!this.resolveRoll) die.body.rotation.copy(this.getLandingRotation(die.value, index))
       this.updateLabel(die)
-      die.label.visible = index < this.options.count
+      die.label.visible = index < this.options.count && this.options.sides === 6
     })
     this.layoutDice()
   }
@@ -215,18 +226,28 @@ export class DiceMode implements ShuffleMode {
     label.scale.set(0.5, 0.5, 1)
     label.renderOrder = 4
     const pips = this.createPipFaces()
+    const numberedFaces = new Map<DieSides, THREE.Group>()
+    dieTypes.filter((sides) => sides !== 6).forEach((sides) => {
+      const faces = this.createNumberedFaces(sides)
+      numberedFaces.set(sides, faces)
+      body.add(faces)
+    })
     body.add(mesh, pips)
     group.add(body, label)
     this.root.add(group)
     return {
-      group, body, mesh, label, labelTexture, labelMaterial, pips, target: new THREE.Vector3(), start: new THREE.Vector3(),
+      group, body, mesh, label, labelTexture, labelMaterial, pips, numberedFaces, target: new THREE.Vector3(), start: new THREE.Vector3(),
       startRotation: new THREE.Euler(), endRotation: new THREE.Euler(), landingRotation: new THREE.Euler(), delay: 0, value: index + 1,
     }
   }
 
   private getLandingRotation(value: number, index: number) {
     if (this.options.sides !== 6) {
-      return new THREE.Euler(-0.16, 0.24 * (index - (this.options.count - 1) / 2), 0.06 * (index % 2 ? 1 : -1))
+      const face = this.faceDefinitions.get(this.options.sides)?.[value - 1]
+      if (!face) return new THREE.Euler()
+      const upright = face.orientation.clone().invert()
+      const tilt = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), 0.055 * (index % 2 ? 1 : -1))
+      return new THREE.Euler().setFromQuaternion(tilt.multiply(upright))
     }
 
     const rotations: Record<number, [number, number, number]> = {
@@ -266,6 +287,46 @@ export class DiceMode implements ShuffleMode {
         map: texture, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2,
       })))
     }
+  }
+
+  private createNumberResources() {
+    this.numberGeometry = this.resources.add(new THREE.PlaneGeometry(1, 1))
+    dieTypes.filter((sides) => sides !== 6).forEach((sides) => {
+      for (let value = 1; value <= sides; value += 1) {
+        const canvas = document.createElement('canvas')
+        canvas.width = 128
+        canvas.height = 128
+        const context = canvas.getContext('2d')!
+        context.fillStyle = 'rgba(255,255,255,.96)'
+        context.font = `600 ${value > 9 ? 58 : 70}px Arial`
+        context.textAlign = 'center'
+        context.textBaseline = 'middle'
+        context.fillText(String(value), 64, 68)
+        if (value === 6 || value === 9) {
+          context.fillRect(43, 105, 42, 4)
+        }
+        const texture = this.resources.add(new THREE.CanvasTexture(canvas))
+        texture.colorSpace = THREE.SRGBColorSpace
+        this.numberMaterials.set(`${sides}:${value}`, this.resources.add(new THREE.MeshBasicMaterial({
+          map: texture, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2,
+        })))
+      }
+    })
+  }
+
+  private createNumberedFaces(sides: DieSides) {
+    const group = new THREE.Group()
+    const size = sides === 4 ? 0.46 : sides === 8 ? 0.38 : sides === 10 ? 0.34 : sides === 12 ? 0.3 : 0.24
+    this.faceDefinitions.get(sides)?.forEach((face, index) => {
+      const number = new THREE.Mesh(this.numberGeometry, this.numberMaterials.get(`${sides}:${index + 1}`))
+      number.position.copy(face.center).addScaledVector(face.normal, 0.018)
+      number.quaternion.copy(face.orientation)
+      number.scale.setScalar(size)
+      number.renderOrder = 3
+      group.add(number)
+    })
+    group.visible = false
+    return group
   }
 
   private createPipFaces() {
