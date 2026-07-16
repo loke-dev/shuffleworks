@@ -7,6 +7,7 @@ import { dieTypes, type DiceOptions, type DieSides } from './types'
 
 type Die = {
   group: THREE.Group
+  body: THREE.Group
   mesh: THREE.Mesh
   label: THREE.Sprite
   labelTexture: THREE.CanvasTexture
@@ -79,15 +80,15 @@ export class DiceMode implements ShuffleMode {
     this.rollingAt = this.elapsed
     this.dice.slice(0, this.options.count).forEach((die, index) => {
       die.start.copy(die.group.position)
-      die.startRotation.copy(die.group.rotation)
-      die.landingRotation.set(-0.16, 0.24 * (index - (this.options.count - 1) / 2), 0.06 * (index % 2 ? 1 : -1))
+      die.startRotation.copy(die.body.rotation)
+      die.value = 1 + Math.floor(Math.random() * this.options.sides)
+      die.landingRotation.copy(this.getLandingRotation(die.value, index))
       die.endRotation.set(
         die.landingRotation.x + (3 + index % 3) * Math.PI * 2,
         die.landingRotation.y + (4 + index % 2) * Math.PI * 2,
         die.landingRotation.z + (2 + index % 3) * Math.PI * 2,
       )
       die.delay = index * 0.055
-      die.value = 1 + Math.floor(Math.random() * this.options.sides)
       die.label.visible = false
       die.labelMaterial.opacity = 0
     })
@@ -99,7 +100,7 @@ export class DiceMode implements ShuffleMode {
     if (!this.resolveRoll) {
       this.dice.slice(0, this.options.count).forEach((die, index) => {
         die.group.position.y = die.target.y + Math.sin(elapsed * 0.8 + index) * 0.035
-        die.group.rotation.z += 0.0007 * (index % 2 ? 1 : -1)
+        die.body.rotation.z += 0.0007 * (index % 2 ? 1 : -1)
       })
       return
     }
@@ -119,7 +120,7 @@ export class DiceMode implements ShuffleMode {
         die.group.position.lerpVectors(die.start, die.target, progress)
         die.group.position.y += arc * (this.viewport.compact ? 1.45 : 1.8) + Math.abs(wobble) * 0.16 + settleHop * 0.2
         die.group.position.z = arc * 1.65 + settleHop * 0.12
-        die.group.rotation.set(
+        die.body.rotation.set(
           THREE.MathUtils.lerp(die.startRotation.x, die.endRotation.x, rotationProgress),
           THREE.MathUtils.lerp(die.startRotation.y, die.endRotation.y, rotationProgress),
           THREE.MathUtils.lerp(die.startRotation.z, die.endRotation.z, rotationProgress),
@@ -131,7 +132,7 @@ export class DiceMode implements ShuffleMode {
       }
       die.group.position.copy(die.target)
       die.group.position.z = 0
-      die.group.rotation.copy(die.landingRotation)
+      die.body.rotation.copy(die.landingRotation)
       this.updateLabel(die)
       die.label.visible = true
       die.labelMaterial.opacity = 1
@@ -161,6 +162,7 @@ export class DiceMode implements ShuffleMode {
       die.mesh.geometry = geometry
       die.pips.visible = this.options.sides === 6
       die.value = Math.min(die.value || index + 1, this.options.sides)
+      if (!this.resolveRoll) die.body.rotation.copy(this.getLandingRotation(die.value, index))
       this.updateLabel(die)
       die.label.visible = index < this.options.count
     })
@@ -190,6 +192,7 @@ export class DiceMode implements ShuffleMode {
 
   private createDie(index: number): Die {
     const group = new THREE.Group()
+    const body = new THREE.Group()
     const material = this.resources.add(new THREE.MeshPhysicalMaterial({
       color: colors[index],
       emissive: colors[index],
@@ -208,16 +211,34 @@ export class DiceMode implements ShuffleMode {
     const labelTexture = this.resources.add(new THREE.CanvasTexture(document.createElement('canvas')))
     const labelMaterial = this.resources.add(new THREE.SpriteMaterial({ map: labelTexture, transparent: true, depthTest: false }))
     const label = new THREE.Sprite(labelMaterial)
-    label.position.set(0, 0, 1.45)
-    label.scale.set(0.78, 0.78, 1)
+    label.position.set(0.48, -0.48, 1.45)
+    label.scale.set(0.5, 0.5, 1)
     label.renderOrder = 4
     const pips = this.createPipFaces()
-    group.add(mesh, pips, label)
+    body.add(mesh, pips)
+    group.add(body, label)
     this.root.add(group)
     return {
-      group, mesh, label, labelTexture, labelMaterial, pips, target: new THREE.Vector3(), start: new THREE.Vector3(),
+      group, body, mesh, label, labelTexture, labelMaterial, pips, target: new THREE.Vector3(), start: new THREE.Vector3(),
       startRotation: new THREE.Euler(), endRotation: new THREE.Euler(), landingRotation: new THREE.Euler(), delay: 0, value: index + 1,
     }
+  }
+
+  private getLandingRotation(value: number, index: number) {
+    if (this.options.sides !== 6) {
+      return new THREE.Euler(-0.16, 0.24 * (index - (this.options.count - 1) / 2), 0.06 * (index % 2 ? 1 : -1))
+    }
+
+    const rotations: Record<number, [number, number, number]> = {
+      1: [0, 0, 0],
+      2: [Math.PI / 2, 0, 0],
+      3: [0, -Math.PI / 2, 0],
+      4: [0, Math.PI / 2, 0],
+      5: [-Math.PI / 2, 0, 0],
+      6: [0, Math.PI, 0],
+    }
+    const [x, y, z] = rotations[value]
+    return new THREE.Euler(x, y, z + 0.045 * (index % 2 ? 1 : -1))
   }
 
   private createPipResources() {
