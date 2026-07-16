@@ -83,7 +83,9 @@ export class TeamMode implements ShuffleMode {
       const cardHeightPx = Math.min(zoneHeightPx - 66, 198)
       this.scale = THREE.MathUtils.clamp((cardHeightPx / viewport.height * worldHeight) / 3.05, 0.42, 0.54)
       const x = Math.min(worldWidth * 0.22, 1.42)
-      const y = worldHeight * 0.255
+      // Keep the resting teams tied to the visible stage, not the taller
+      // bleed canvas used for foreground animation.
+      const y = (Math.min(viewport.width * 0.42, 176) / viewport.height) * worldHeight
       this.setSlots([[-x, y], [x, y], [-x, -y], [x, -y]])
     } else {
       const teamWidthPx = (viewport.width - 118) / 2
@@ -112,14 +114,14 @@ export class TeamMode implements ShuffleMode {
       const side = index % 2 === 0 ? -1 : 1
       const lane = index < 2 ? 1 : -1
       const start = card.object.position.clone()
-      const gather = new THREE.Vector3(side * 0.32, 0.28, 1.35)
+      const gather = new THREE.Vector3(side * 0.32, 0.28, 1)
       const orbit = new THREE.Vector3(
-        -side * (2.7 + index * 0.2),
-        lane * (this.viewport.compact ? 2.65 : 2.35),
-        2.25,
+        -side * ((this.viewport.compact ? 1.55 : 2.15) + index * 0.1),
+        lane * (this.viewport.compact ? 1.65 : 1.6),
+        1.35,
       )
-      const apex = new THREE.Vector3(side * 1.1, 2.9 - index * 0.18, 2.55)
-      const settle = card.target.clone().lerp(new THREE.Vector3(0, 0.35, 0.9), 0.16)
+      const apex = new THREE.Vector3(side * 0.75, 1.75 - index * 0.1, 1.55)
+      const settle = card.target.clone().lerp(new THREE.Vector3(0, 0.28, 0.7), 0.16)
       card.animation = {
         curve: new THREE.CatmullRomCurve3([start, gather, orbit, apex, settle, card.target.clone()], false, 'centripetal'),
         startedAt: this.elapsed,
@@ -153,14 +155,14 @@ export class TeamMode implements ShuffleMode {
           const lift = Math.sin(linear * Math.PI) ** 2
           energy = Math.max(energy, lift)
           card.object.position.copy(animation.curve.getPoint(progress))
-          card.object.position.z += lift * 2.6
+          card.object.position.z += lift * 1.35
           card.object.rotation.x = THREE.MathUtils.lerp(animation.startRotation.x, card.homeRotation.x, progress)
             + Math.sin(linear * Math.PI * 2) * lift * 0.34
           card.object.rotation.y = THREE.MathUtils.lerp(animation.startRotation.y, 0, progress)
             + this.easeOutCubic(linear) * Math.PI * 2 * animation.turns
           card.object.rotation.z = THREE.MathUtils.lerp(animation.startRotation.z, card.homeRotation.z, progress)
             + Math.sin(linear * Math.PI * 3) * lift * 0.24
-          card.object.scale.setScalar(this.scale * (1 + lift * 0.16))
+          card.object.scale.setScalar(this.scale * (1 + lift * 0.06))
           return
         }
         card.object.position.copy(card.target)
@@ -177,9 +179,9 @@ export class TeamMode implements ShuffleMode {
     })
 
     this.haloEnergy += (energy - this.haloEnergy) * 0.13
-    this.context.camera.position.z = this.baseCameraZ - this.haloEnergy * 0.9
-    this.context.camera.position.y = this.haloEnergy * 0.18
-    this.context.camera.lookAt(0, this.haloEnergy * 0.12, 0)
+    this.context.camera.position.z = this.baseCameraZ - this.haloEnergy * 0.35
+    this.context.camera.position.y = this.haloEnergy * 0.1
+    this.context.camera.lookAt(0, this.haloEnergy * 0.07, 0)
     this.root.rotation.z = Math.sin(elapsed * 5) * this.haloEnergy * 0.018
     this.halo.material.opacity = this.haloEnergy * 0.4
     this.halo.rotation.z = elapsed * 0.55

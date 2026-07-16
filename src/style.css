@@ -220,15 +220,22 @@ h1 em {
 }
 canvas {
   position: absolute;
-  inset: 0;
+  top: -220px;
+  right: 0;
+  bottom: -220px;
+  left: 0;
   z-index: 3;
   width: 100% !important;
-  height: 100% !important;
+  height: calc(100% + 440px) !important;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 480ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .is-ready canvas {
   opacity: 1;
+}
+.is-shuffling canvas {
+  z-index: 12;
 }
 .stage-poster {
   position: absolute;
@@ -630,7 +637,12 @@ footer a {
   }
   .world {
     inset: 250px 0 126px;
-    overflow: hidden;
+    overflow: visible;
+  }
+  canvas {
+    top: -260px;
+    bottom: -260px;
+    height: calc(100% + 520px) !important;
   }
   .axis {
     width: 86%;

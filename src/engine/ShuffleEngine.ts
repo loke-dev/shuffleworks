@@ -55,7 +55,9 @@ export class ShuffleEngine {
   }
 
   private viewport(): Viewport {
-    const bounds = (this.canvas.parentElement ?? this.canvas).getBoundingClientRect()
+    // The canvas intentionally bleeds beyond the visual stage so foreground
+    // cards can leave it without being clipped by the WebGL drawing buffer.
+    const bounds = this.canvas.getBoundingClientRect()
     return {
       width: Math.max(bounds.width, 1),
       height: Math.max(bounds.height, 1),
