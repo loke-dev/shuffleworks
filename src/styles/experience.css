@@ -1,6 +1,11 @@
 /* Stage-specific refinements live separately from the structural shell. */
 .scene-copy {
   top: 112px;
+  z-index: 14;
+}
+
+.topbar {
+  z-index: 15;
 }
 
 .scene-copy h1 {
@@ -18,7 +23,6 @@
 .versus span {
   width: 58px;
   height: 25px;
-  border: 0;
   border: 0;
   border-radius: 0;
   background: transparent;

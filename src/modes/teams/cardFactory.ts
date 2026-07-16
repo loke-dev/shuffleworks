@@ -31,7 +31,7 @@ export class CardFactory {
     this.edgeMaterial = resources.add(new THREE.LineBasicMaterial({
       color: 0xffffff,
       transparent: true,
-      opacity: 0.3,
+      opacity: 0.42,
     }))
   }
 
@@ -39,29 +39,40 @@ export class CardFactory {
     const object = new THREE.Group()
     const material = this.resources.add(new THREE.MeshPhysicalMaterial({
       color: data.color,
-      roughness: 0.15,
+      emissive: data.color,
+      emissiveIntensity: 0.1,
+      roughness: 0.11,
       metalness: 0.03,
-      transmission: 0.44,
-      thickness: 1,
+      transmission: 0.56,
+      thickness: 1.15,
       ior: 1.42,
       transparent: true,
-      opacity: 0.94,
+      opacity: 0.88,
       clearcoat: 1,
-      clearcoatRoughness: 0.09,
-      iridescence: 0.18,
+      clearcoatRoughness: 0.055,
+      iridescence: 0.24,
       iridescenceIOR: 1.6,
+      specularIntensity: 1,
+      specularColor: 0xffffff,
     }))
-    object.add(new THREE.Mesh(this.bodyGeometry, material))
+    const body = new THREE.Mesh(this.bodyGeometry, material)
+    body.renderOrder = 0
+    object.add(body)
 
     const faceMaterial = this.resources.add(new THREE.MeshBasicMaterial({
       map: this.makeTexture(data),
       transparent: true,
-      opacity: 0.86,
+      opacity: 0.92,
       depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: -2,
     }))
     const face = new THREE.Mesh(this.faceGeometry, faceMaterial)
-    face.position.z = 0.098
-    object.add(face, new THREE.LineSegments(this.edgeGeometry, this.edgeMaterial))
+    face.position.z = 0.102
+    face.renderOrder = 2
+    const edges = new THREE.LineSegments(this.edgeGeometry, this.edgeMaterial)
+    edges.renderOrder = 3
+    object.add(face, edges)
 
     object.rotation.set(index % 2 ? -0.025 : 0.025, 0, (index - 1.5) * 0.04)
     return {
@@ -82,9 +93,9 @@ export class CardFactory {
     context.scale(0.75, 0.75)
     const sheen = context.createLinearGradient(0, 0, 512, 768)
     sheen.addColorStop(0, 'rgba(255,255,255,.66)')
-    sheen.addColorStop(0.26, 'rgba(255,255,255,.06)')
-    sheen.addColorStop(0.72, 'rgba(255,255,255,.15)')
-    sheen.addColorStop(1, 'rgba(255,255,255,.46)')
+    sheen.addColorStop(0.24, 'rgba(255,255,255,.11)')
+    sheen.addColorStop(0.68, 'rgba(255,255,255,.19)')
+    sheen.addColorStop(1, 'rgba(255,255,255,.52)')
     context.fillStyle = sheen
     context.fillRect(0, 0, 512, 768)
     context.strokeStyle = 'rgba(255,255,255,.56)'
