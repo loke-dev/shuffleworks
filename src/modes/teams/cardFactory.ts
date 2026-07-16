@@ -63,7 +63,9 @@ export class CardFactory {
       map: this.makeTexture(data),
       transparent: true,
       opacity: 0.92,
+      depthTest: false,
       depthWrite: false,
+      toneMapped: false,
       polygonOffset: true,
       polygonOffsetFactor: -2,
     }))
