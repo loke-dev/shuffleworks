@@ -283,7 +283,7 @@ export class DiceMode implements ShuffleMode {
         canvas.width = 192
         canvas.height = 192
         const context = canvas.getContext('2d')!
-        context.font = `700 ${value > 9 ? 92 : 112}px Arial`
+        context.font = `600 ${value > 9 ? 92 : 112}px Arial`
         context.textAlign = 'center'
         context.textBaseline = 'middle'
         drawEngravedText(context, String(value), 96, 101)
@@ -381,12 +381,13 @@ function cubeFaces(): DieFace[] {
 
 function drawEngravedText(context: CanvasRenderingContext2D, text: string, x: number, y: number) {
   context.save()
-  context.fillStyle = 'rgba(255,255,255,.2)'
-  context.fillText(text, x, y + 1.5)
-  context.shadowColor = 'rgba(0,0,0,.24)'
-  context.shadowBlur = 2
-  context.shadowOffsetY = 1
-  context.fillStyle = 'rgba(12,15,24,.34)'
+  context.filter = 'blur(.35px)'
+  context.fillStyle = 'rgba(255,255,255,.16)'
+  context.fillText(text, x, y + 2)
+  context.shadowColor = 'rgba(0,0,0,.28)'
+  context.shadowBlur = 4
+  context.shadowOffsetY = 1.5
+  context.fillStyle = 'rgba(10,13,21,.43)'
   context.fillText(text, x, y)
   context.shadowColor = 'transparent'
   context.restore()
@@ -394,34 +395,34 @@ function drawEngravedText(context: CanvasRenderingContext2D, text: string, x: nu
 
 function drawEngravedDot(context: CanvasRenderingContext2D, x: number, y: number, radius: number) {
   context.save()
-  context.shadowColor = 'rgba(0,0,0,.22)'
-  context.shadowBlur = 2
-  context.shadowOffsetY = 1
+  context.shadowColor = 'rgba(0,0,0,.27)'
+  context.shadowBlur = 4
+  context.shadowOffsetY = 1.5
   context.beginPath()
   context.arc(x, y, radius, 0, Math.PI * 2)
   const inset = context.createRadialGradient(x, y - 2, radius * 0.15, x, y, radius)
-  inset.addColorStop(0, 'rgba(10,13,21,.3)')
-  inset.addColorStop(0.72, 'rgba(10,13,21,.34)')
-  inset.addColorStop(1, 'rgba(10,13,21,.16)')
+  inset.addColorStop(0, 'rgba(10,13,21,.39)')
+  inset.addColorStop(0.68, 'rgba(10,13,21,.43)')
+  inset.addColorStop(1, 'rgba(10,13,21,.22)')
   context.fillStyle = inset
   context.fill()
   context.shadowColor = 'transparent'
   context.beginPath()
   context.arc(x, y, radius - 0.75, 0.15 * Math.PI, 0.85 * Math.PI)
   context.lineWidth = 1.5
-  context.strokeStyle = 'rgba(255,255,255,.22)'
+  context.strokeStyle = 'rgba(255,255,255,.17)'
   context.stroke()
   context.restore()
 }
 
 function drawEngravedLine(context: CanvasRenderingContext2D, x: number, y: number, width: number) {
   context.save()
-  context.fillStyle = 'rgba(255,255,255,.2)'
-  context.fillRect(x, y + 1.5, width, 3)
-  context.shadowColor = 'rgba(0,0,0,.22)'
-  context.shadowBlur = 2
-  context.shadowOffsetY = 1
-  context.fillStyle = 'rgba(12,15,24,.34)'
+  context.fillStyle = 'rgba(255,255,255,.16)'
+  context.fillRect(x, y + 2, width, 3)
+  context.shadowColor = 'rgba(0,0,0,.28)'
+  context.shadowBlur = 4
+  context.shadowOffsetY = 1.5
+  context.fillStyle = 'rgba(10,13,21,.43)'
   context.fillRect(x, y, width, 3)
   context.restore()
 }
