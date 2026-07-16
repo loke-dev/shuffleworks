@@ -17,7 +17,7 @@ export const modeRegistry: ModeDefinition[] = [
     order: 2,
     async load() {
       const { DiceMode } = await import('./dice/DiceMode')
-      return new DiceMode({ count: 2, sides: 6 })
+      return new DiceMode({ count: 2, sides: 6, faceStyle: 'classic' })
     },
   },
 ]

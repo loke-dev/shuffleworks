@@ -1,5 +1,5 @@
 import type { ShuffleResult } from '../engine/types'
-import type { DiceOptions, DieSides } from '../modes/dice/types'
+import type { DiceOptions, DieSides, FaceStyle } from '../modes/dice/types'
 import { clearSavedDiceHistory, DICE_HISTORY_LIMIT, loadDiceHistory, saveDiceHistory, type DiceHistoryEntry } from './diceHistory'
 import { footerMarkup, navigationMarkup, brandMarkup } from './shared'
 import type { AppShell } from './types'
@@ -19,6 +19,7 @@ export function createDiceShell(root: HTMLElement): DiceShell {
         <div class="dice-controls" aria-label="Dice configuration">
           <fieldset><legend>How many</legend><div class="option-row" data-count-options>${[1,2,3,4,5,6].map((n) => `<button type="button" data-count="${n}" ${n === 2 ? 'aria-pressed="true"' : 'aria-pressed="false"'}>${n}</button>`).join('')}</div></fieldset>
           <fieldset><legend>Die type</legend><div class="option-row die-types">${[4,6,8,10,12,20].map((n) => `<button type="button" data-sides="${n}" ${n === 6 ? 'aria-pressed="true"' : 'aria-pressed="false"'}>D${n}</button>`).join('')}</div></fieldset>
+          <fieldset><legend>Face style</legend><div class="option-row face-styles"><button type="button" data-face-style="classic">Classic</button><button type="button" data-face-style="numbers">Numbers</button></div></fieldset>
           <button class="shuffle dice-roll" type="button" data-shuffle><i aria-hidden="true">↝</i><span>Roll dice</span><kbd>Space</kbd></button>
         </div>
       </section>
@@ -48,7 +49,7 @@ export function createDiceShell(root: HTMLElement): DiceShell {
   const resultTitle = root.querySelector<HTMLElement>('#dice-result-title')!
   const announcement = root.querySelector<HTMLElement>('[data-announcement]')!
   const totalDisplay = root.querySelector<HTMLElement>('[data-dice-total]')!
-  let current: DiceOptions = { count: 2, sides: 6 }
+  let current: DiceOptions = { count: 2, sides: 6, faceStyle: loadFaceStyle() }
   let history = loadDiceHistory()
   const optionHandlers: Array<(options: DiceOptions) => void> = []
 
@@ -70,11 +71,18 @@ export function createDiceShell(root: HTMLElement): DiceShell {
     current = next
     root.querySelectorAll<HTMLButtonElement>('[data-count]').forEach((button) => button.setAttribute('aria-pressed', String(Number(button.dataset.count) === current.count)))
     root.querySelectorAll<HTMLButtonElement>('[data-sides]').forEach((button) => button.setAttribute('aria-pressed', String(Number(button.dataset.sides) === current.sides)))
+    root.querySelectorAll<HTMLButtonElement>('[data-face-style]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.faceStyle === current.faceStyle)))
     optionHandlers.forEach((handler) => handler(current))
   }
 
   root.querySelectorAll<HTMLButtonElement>('[data-count]').forEach((button) => button.addEventListener('click', () => updateOptions({ ...current, count: Number(button.dataset.count) })))
   root.querySelectorAll<HTMLButtonElement>('[data-sides]').forEach((button) => button.addEventListener('click', () => updateOptions({ ...current, sides: Number(button.dataset.sides) as DieSides })))
+  root.querySelectorAll<HTMLButtonElement>('[data-face-style]').forEach((button) => button.addEventListener('click', () => {
+    const faceStyle = button.dataset.faceStyle as FaceStyle
+    saveFaceStyle(faceStyle)
+    updateOptions({ ...current, faceStyle })
+  }))
+  updateOptions(current)
   clearHistoryButton.addEventListener('click', () => {
     history = []
     clearSavedDiceHistory()
@@ -108,6 +116,20 @@ export function createDiceShell(root: HTMLElement): DiceShell {
     },
     onShuffle(handler) { rollButton.addEventListener('click', handler) },
   }
+}
+
+const FACE_STYLE_KEY = 'shuffleworks:dice-face-style:v1'
+
+function loadFaceStyle(): FaceStyle {
+  try {
+    return localStorage.getItem(FACE_STYLE_KEY) === 'numbers' ? 'numbers' : 'classic'
+  } catch {
+    return 'classic'
+  }
+}
+
+function saveFaceStyle(faceStyle: FaceStyle) {
+  try { localStorage.setItem(FACE_STYLE_KEY, faceStyle) } catch { /* Preference remains active for this session. */ }
 }
 
 function historyEntryMarkup(entry: DiceHistoryEntry, index: number) {

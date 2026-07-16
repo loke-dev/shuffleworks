@@ -10,10 +10,8 @@ type Die = {
   group: THREE.Group
   body: THREE.Group
   mesh: THREE.Mesh
-  label: THREE.Sprite
-  labelTexture: THREE.CanvasTexture
-  labelMaterial: THREE.SpriteMaterial
   pips: THREE.Group
+  d4Dots: THREE.Group
   numberedFaces: Map<DieSides, THREE.Group>
   target: THREE.Vector3
   start: THREE.Vector3
@@ -99,8 +97,6 @@ export class DiceMode implements ShuffleMode {
         die.landingRotation.z + (2 + index % 3) * Math.PI * 2,
       )
       die.delay = index * 0.055
-      die.label.visible = false
-      die.labelMaterial.opacity = 0
     })
     return new Promise((resolve) => { this.resolveRoll = resolve })
   }
@@ -135,17 +131,11 @@ export class DiceMode implements ShuffleMode {
           THREE.MathUtils.lerp(die.startRotation.y, die.endRotation.y, rotationProgress),
           THREE.MathUtils.lerp(die.startRotation.z, die.endRotation.z, rotationProgress),
         )
-        const labelProgress = this.options.sides === 6 ? smoothstep((linear - 0.82) / 0.18) : 0
-        die.label.visible = this.options.sides === 6 && labelProgress > 0
-        die.labelMaterial.opacity = labelProgress
         return
       }
       die.group.position.copy(die.target)
       die.group.position.z = 0
       die.body.rotation.copy(die.landingRotation)
-      this.updateLabel(die)
-      die.label.visible = this.options.sides === 6
-      die.labelMaterial.opacity = 1
     })
 
     if (active === 0) {
@@ -156,7 +146,7 @@ export class DiceMode implements ShuffleMode {
   }
 
   reset() {
-    this.options = { count: 2, sides: 6 }
+    this.options = { count: 2, sides: 6, faceStyle: this.options.faceStyle }
     this.applyOptions()
   }
 
@@ -170,12 +160,13 @@ export class DiceMode implements ShuffleMode {
     this.dice.forEach((die, index) => {
       die.group.visible = index < this.options.count
       die.mesh.geometry = geometry
-      die.pips.visible = this.options.sides === 6
-      die.numberedFaces.forEach((faces, sides) => { faces.visible = sides === this.options.sides })
+      die.pips.visible = this.options.sides === 6 && this.options.faceStyle === 'classic'
+      die.d4Dots.visible = this.options.sides === 4 && this.options.faceStyle === 'classic'
+      die.numberedFaces.forEach((faces, sides) => {
+        faces.visible = sides === this.options.sides && (this.options.faceStyle === 'numbers' || (sides !== 4 && sides !== 6))
+      })
       die.value = Math.min(die.value || index + 1, this.options.sides)
       if (!this.resolveRoll) die.body.rotation.copy(this.getLandingRotation(die.value, index))
-      this.updateLabel(die)
-      die.label.visible = index < this.options.count && this.options.sides === 6
     })
     this.layoutDice()
   }
@@ -197,6 +188,9 @@ export class DiceMode implements ShuffleMode {
       const column = index % columns
       die.target.set((column - (inRow - 1) / 2) * gapX, ((rows - 1) / 2 - row) * gapY - 0.05, 0)
       die.group.scale.setScalar(scale)
+      const markScale = count >= 4 ? 1.34 : count === 3 ? 1.14 : 1
+      die.numberedFaces.forEach((faces) => faces.children.forEach((mark) => mark.scale.setScalar(Number(mark.userData.markSize) * markScale)))
+      die.d4Dots.children.forEach((mark) => mark.scale.setScalar(Number(mark.userData.markSize) * markScale))
       if (!this.resolveRoll) die.group.position.copy(die.target)
     })
   }
@@ -219,24 +213,19 @@ export class DiceMode implements ShuffleMode {
       flatShading: false,
     }))
     const mesh = new THREE.Mesh(this.geometries.get(this.options.sides)!, material)
-    const labelTexture = this.resources.add(new THREE.CanvasTexture(document.createElement('canvas')))
-    const labelMaterial = this.resources.add(new THREE.SpriteMaterial({ map: labelTexture, transparent: true, depthTest: false }))
-    const label = new THREE.Sprite(labelMaterial)
-    label.position.set(0.48, -0.48, 1.45)
-    label.scale.set(0.5, 0.5, 1)
-    label.renderOrder = 4
     const pips = this.createPipFaces()
+    const d4Dots = this.createD4DotFaces()
     const numberedFaces = new Map<DieSides, THREE.Group>()
-    dieTypes.filter((sides) => sides !== 6).forEach((sides) => {
+    dieTypes.forEach((sides) => {
       const faces = this.createNumberedFaces(sides)
       numberedFaces.set(sides, faces)
       body.add(faces)
     })
-    body.add(mesh, pips)
-    group.add(body, label)
+    body.add(mesh, pips, d4Dots)
+    group.add(body)
     this.root.add(group)
     return {
-      group, body, mesh, label, labelTexture, labelMaterial, pips, numberedFaces, target: new THREE.Vector3(), start: new THREE.Vector3(),
+      group, body, mesh, pips, d4Dots, numberedFaces, target: new THREE.Vector3(), start: new THREE.Vector3(),
       startRotation: new THREE.Euler(), endRotation: new THREE.Euler(), landingRotation: new THREE.Euler(), delay: 0, value: index + 1,
     }
   }
@@ -275,11 +264,8 @@ export class DiceMode implements ShuffleMode {
         5: [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]],
         6: [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]],
       }
-      context.fillStyle = 'rgba(255,255,255,.92)'
       positions[value].forEach(([x, y]) => {
-        context.beginPath()
-        context.arc(96 + x * 49, 96 + y * 49, 13, 0, Math.PI * 2)
-        context.fill()
+        drawEngravedDot(context, 96 + x * 49, 96 + y * 49, 14)
       })
       const texture = this.resources.add(new THREE.CanvasTexture(canvas))
       texture.colorSpace = THREE.SRGBColorSpace
@@ -291,19 +277,18 @@ export class DiceMode implements ShuffleMode {
 
   private createNumberResources() {
     this.numberGeometry = this.resources.add(new THREE.PlaneGeometry(1, 1))
-    dieTypes.filter((sides) => sides !== 6).forEach((sides) => {
+    dieTypes.forEach((sides) => {
       for (let value = 1; value <= sides; value += 1) {
         const canvas = document.createElement('canvas')
-        canvas.width = 128
-        canvas.height = 128
+        canvas.width = 192
+        canvas.height = 192
         const context = canvas.getContext('2d')!
-        context.fillStyle = 'rgba(255,255,255,.96)'
-        context.font = `600 ${value > 9 ? 58 : 70}px Arial`
+        context.font = `700 ${value > 9 ? 92 : 112}px Arial`
         context.textAlign = 'center'
         context.textBaseline = 'middle'
-        context.fillText(String(value), 64, 68)
+        drawEngravedText(context, String(value), 96, 101)
         if (value === 6 || value === 9) {
-          context.fillRect(43, 105, 42, 4)
+          drawEngravedLine(context, 63, 164, 66)
         }
         const texture = this.resources.add(new THREE.CanvasTexture(canvas))
         texture.colorSpace = THREE.SRGBColorSpace
@@ -316,14 +301,32 @@ export class DiceMode implements ShuffleMode {
 
   private createNumberedFaces(sides: DieSides) {
     const group = new THREE.Group()
-    const size = sides === 4 ? 0.46 : sides === 8 ? 0.38 : sides === 10 ? 0.34 : sides === 12 ? 0.3 : 0.24
-    this.faceDefinitions.get(sides)?.forEach((face, index) => {
+    const size = sides === 4 ? 0.54 : sides === 6 ? 0.62 : sides === 8 ? 0.46 : sides === 10 ? 0.42 : sides === 12 ? 0.38 : 0.32
+    const faces = sides === 6 ? cubeFaces() : this.faceDefinitions.get(sides) ?? []
+    faces.forEach((face, index) => {
       const number = new THREE.Mesh(this.numberGeometry, this.numberMaterials.get(`${sides}:${index + 1}`))
       number.position.copy(face.center).addScaledVector(face.normal, 0.018)
       number.quaternion.copy(face.orientation)
       number.scale.setScalar(size)
+      number.userData.markSize = size
       number.renderOrder = 3
       group.add(number)
+    })
+    group.visible = false
+    return group
+  }
+
+  private createD4DotFaces() {
+    const group = new THREE.Group()
+    const size = 0.7
+    this.faceDefinitions.get(4)?.forEach((face, index) => {
+      const dots = new THREE.Mesh(this.numberGeometry, this.pipMaterials.get(index + 1))
+      dots.position.copy(face.center).addScaledVector(face.normal, 0.018)
+      dots.quaternion.copy(face.orientation)
+      dots.scale.setScalar(size)
+      dots.userData.markSize = size
+      dots.renderOrder = 3
+      group.add(dots)
     })
     group.visible = false
     return group
@@ -349,27 +352,6 @@ export class DiceMode implements ShuffleMode {
     return group
   }
 
-  private updateLabel(die: Die) {
-    const canvas = die.labelTexture.image as HTMLCanvasElement
-    canvas.width = 128
-    canvas.height = 128
-    const context = canvas.getContext('2d')!
-    context.clearRect(0, 0, 128, 128)
-    context.fillStyle = 'rgba(5,6,10,.48)'
-    context.beginPath()
-    context.arc(64, 64, 44, 0, Math.PI * 2)
-    context.fill()
-    context.strokeStyle = 'rgba(255,255,255,.65)'
-    context.lineWidth = 2
-    context.stroke()
-    context.fillStyle = '#fff'
-    context.font = '500 46px Arial'
-    context.textAlign = 'center'
-    context.textBaseline = 'middle'
-    context.fillText(String(die.value), 64, 66)
-    die.labelTexture.needsUpdate = true
-  }
-
   private result(): ShuffleResult {
     const items = this.dice.slice(0, this.options.count).map((die, index) => ({
       id: `die-${index + 1}`,
@@ -379,4 +361,66 @@ export class DiceMode implements ShuffleMode {
     const total = items.reduce((sum, item) => sum + Number(item.label), 0)
     return { groups: [{ label: `D${this.options.sides} roll · total ${total}`, items }], announcement: `Rolled ${items.map((item) => item.label).join(', ')}. Total ${total}.` }
   }
+}
+
+function cubeFaces(): DieFace[] {
+  const definitions: Array<[THREE.Vector3, THREE.Vector3]> = [
+    [new THREE.Vector3(0, 0, 0.786), new THREE.Vector3(0, 0, 1)],
+    [new THREE.Vector3(0, 0.786, 0), new THREE.Vector3(0, 1, 0)],
+    [new THREE.Vector3(0.786, 0, 0), new THREE.Vector3(1, 0, 0)],
+    [new THREE.Vector3(-0.786, 0, 0), new THREE.Vector3(-1, 0, 0)],
+    [new THREE.Vector3(0, -0.786, 0), new THREE.Vector3(0, -1, 0)],
+    [new THREE.Vector3(0, 0, -0.786), new THREE.Vector3(0, 0, -1)],
+  ]
+  return definitions.map(([center, normal]) => ({
+    center,
+    normal,
+    orientation: new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal),
+  }))
+}
+
+function drawEngravedText(context: CanvasRenderingContext2D, text: string, x: number, y: number) {
+  context.save()
+  context.shadowColor = 'rgba(0,0,0,.9)'
+  context.shadowBlur = 9
+  context.shadowOffsetY = 5
+  context.lineWidth = 5
+  context.strokeStyle = 'rgba(0,0,0,.72)'
+  context.strokeText(text, x, y)
+  context.fillStyle = 'rgba(18,20,29,.9)'
+  context.fillText(text, x, y)
+  context.shadowColor = 'transparent'
+  context.lineWidth = 2
+  context.strokeStyle = 'rgba(255,255,255,.48)'
+  context.strokeText(text, x, y + 1)
+  context.restore()
+}
+
+function drawEngravedDot(context: CanvasRenderingContext2D, x: number, y: number, radius: number) {
+  context.save()
+  context.shadowColor = 'rgba(0,0,0,.92)'
+  context.shadowBlur = 8
+  context.shadowOffsetY = 4
+  context.beginPath()
+  context.arc(x, y, radius, 0, Math.PI * 2)
+  context.fillStyle = 'rgba(16,18,26,.9)'
+  context.fill()
+  context.shadowColor = 'transparent'
+  context.lineWidth = 2
+  context.strokeStyle = 'rgba(255,255,255,.48)'
+  context.stroke()
+  context.restore()
+}
+
+function drawEngravedLine(context: CanvasRenderingContext2D, x: number, y: number, width: number) {
+  context.save()
+  context.shadowColor = 'rgba(0,0,0,.9)'
+  context.shadowBlur = 6
+  context.shadowOffsetY = 3
+  context.fillStyle = 'rgba(16,18,26,.9)'
+  context.fillRect(x, y, width, 6)
+  context.shadowColor = 'transparent'
+  context.fillStyle = 'rgba(255,255,255,.42)'
+  context.fillRect(x, y + 5, width, 2)
+  context.restore()
 }
