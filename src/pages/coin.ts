@@ -22,9 +22,11 @@ export function renderCoin(root: HTMLElement) {
         : '<svg viewBox="0 0 100 100"><path d="M50 9 60 38 91 50 60 61 50 91 39 61 9 50 39 38z"/><circle cx="50" cy="50" r="12"/></svg>'
       const emblem=`<b class="coin-emblem ${result==='H'?'coin-portrait':'coin-compass'}" aria-hidden="true">${graphic}</b>`
       return `<button type="button" class="coin-object" data-result="${result}" style="--delay:${index * 45}ms" aria-label="Flip ${results.length === 1 ? 'coin' : `coin ${index + 1}`}">
-        <span class="coin-face coin-front">${emblem}</span>
-        <span class="coin-face coin-back">${emblem}</span>
-        <span class="coin-edge" aria-hidden="true"></span>
+        <span class="coin-body">
+          <span class="coin-face coin-front">${emblem}</span>
+          <span class="coin-face coin-back">${emblem}</span>
+          <span class="coin-edge" aria-hidden="true"></span>
+        </span>
       </button>`
     }).join('')
   }
@@ -39,7 +41,7 @@ export function renderCoin(root: HTMLElement) {
     field.classList.add('is-flipping')
     button.disabled = true
     outcome.innerHTML='<span>In the air</span><b>Calling it…</b>'
-    const settleDelay = 1650 + (results.length - 1) * 45
+    const settleDelay = 1850 + (results.length - 1) * 45
     let settled=false
     const settle=()=>{
       if(settled)return
