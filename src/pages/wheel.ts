@@ -2,6 +2,7 @@ import { loadLocal, randomInt, saveLocal } from '../lib/random'
 import { createToolPage } from '../shell/createToolPage'
 
 const KEY = 'shuffleworks:wheel-entries:v1'
+const SPIN_DURATION = 4200
 const fallback = ['Pizza', 'Tacos', 'Burgers', 'Sushi', 'Pasta', 'Surprise me']
 
 export function renderWheel(root: HTMLElement) {
@@ -68,7 +69,7 @@ export function renderWheel(root: HTMLElement) {
       buttons.forEach((button) => { button.disabled = false })
     }
     wheel.addEventListener('transitionend', onTransitionEnd)
-    settleTimer = window.setTimeout(settle, 3800)
+    settleTimer = window.setTimeout(settle, SPIN_DURATION + 500)
   }
   textarea.addEventListener('input', render)
   buttons.forEach((button) => button.addEventListener('click', spin))
