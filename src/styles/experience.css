@@ -22,6 +22,7 @@
 
 .color-experience .world {
   inset-block: 0 112px;
+  overflow: hidden;
   border-bottom: 1px solid var(--line);
   background:
     radial-gradient(circle at 50% 48%, rgba(169, 116, 255, 0.13), transparent 42%),
