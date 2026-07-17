@@ -3,6 +3,7 @@ import { createToolPage } from '../shell/createToolPage'
 
 const KEY = 'shuffleworks:wheel-entries:v1'
 const SPIN_DURATION = 4200
+const LABEL_RADIUS = 34
 const fallback = ['Pizza', 'Tacos', 'Burgers', 'Sushi', 'Pasta', 'Surprise me']
 
 export function renderWheel(root: HTMLElement) {
@@ -24,18 +25,17 @@ export function renderWheel(root: HTMLElement) {
   textarea.value = entries.join('\n')
   const getEntries = () => textarea.value.split('\n').map((item) => item.trim()).filter(Boolean).slice(0, 24)
   const normalizeAngle = (angle: number) => ((angle % 360) + 360) % 360
-  const isUpsideDown = (angle: number) => {
-    const normalized = normalizeAngle(angle - 90)
-    return normalized > 90 && normalized < 270
-  }
   const render = () => {
     const values = getEntries()
     const colors = ['#6d54ad','#286c9d','#9f494b','#9d873c','#367d70','#955478']
     wheel.style.background = values.length ? `conic-gradient(${values.map((_, index) => `${colors[index % colors.length]} ${index / values.length * 100}% ${(index + 1) / values.length * 100}%`).join(',')})` : '#161822'
     wheel.innerHTML = values.map((value, index) => {
       const angle = (index + .5) / values.length * 360
-      const classes = [isUpsideDown(angle) ? 'is-flipped' : '', value.length > 9 ? 'is-long' : ''].filter(Boolean).join(' ')
-      return `<span data-angle="${angle}" data-index="${index}" class="${classes}" style="--angle:${angle}deg"><b>${escapeHtml(value)}</b></span>`
+      const radians = angle * Math.PI / 180
+      const x = 50 + Math.sin(radians) * LABEL_RADIUS
+      const y = 50 - Math.cos(radians) * LABEL_RADIUS
+      const classes = value.length > 9 ? 'is-long' : ''
+      return `<span data-angle="${angle}" data-index="${index}" class="${classes}" style="--angle:${angle}deg;--label-x:${x}%;--label-y:${y}%"><b>${escapeHtml(value)}</b></span>`
     }).join('')
     saveLocal(KEY, values)
   }
