@@ -98,3 +98,16 @@
 @keyframes deal-card { 0%{opacity:0;transform:translate3d(-180px,-20px,120px) rotateY(160deg) rotateZ(-18deg) scale(.82)} 55%{opacity:1;transform:translate3d(-15px,-25px,40px) rotateY(14deg) rotateZ(3deg) scale(1.03)} 100%{opacity:1;transform:rotate(calc((var(--i) - 2)*1.8deg))} }
 @keyframes deck-lift { 45%{transform:translate(22px,-28px) rotate(8deg)} }
 @keyframes deck-open { 0%{opacity:.2;transform:scale(.78) rotateY(-22deg)} 65%{transform:scale(1.05) rotateY(4deg)} to{opacity:1;transform:none} }
+
+/* Three distinct beats: the move is revealed as the third shake starts. */
+.rps-arena article:first-child b { --rps-tilt:-9deg; }
+.rps-arena article:last-child b { --rps-tilt:9deg; }
+.rps-arena.is-throwing article b {
+  animation:rps-shake .46s cubic-bezier(.22,.72,.2,1) 3;
+  transform-origin:50% 85%;
+  will-change:transform;
+}
+@keyframes rps-shake {
+  0%,100% { transform:translateY(0) rotate(0); }
+  48% { transform:translateY(-55px) rotate(var(--rps-tilt)); }
+}
