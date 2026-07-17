@@ -171,11 +171,11 @@
   }
 
   .experience {
-    min-height: 100svh;
+    min-height: calc(100svh - 72px);
   }
 
   .world {
-    inset-block: 72px 90px;
+    inset-block: 0 90px;
   }
 
   .action-rail {

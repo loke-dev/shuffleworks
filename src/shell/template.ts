@@ -3,14 +3,13 @@ import { brandMarkup, footerMarkup, navigationMarkup } from './shared'
 export function createAppMarkup(year: number) {
   return `
     <div class="app-shell color-shell">
+      <header class="landing-header">
+        ${brandMarkup()}
+        ${navigationMarkup('colors')}
+      </header>
       <main>
-        <section class="experience" aria-label="Color team shuffle">
-          <header class="topbar">
-            ${brandMarkup()}
-            ${navigationMarkup('colors')}
-            <div class="mode-index"><span>Spectrum</span><b>01</b></div>
-          </header>
-
+        <section class="experience color-experience" aria-label="Color team shuffle">
+          <div class="tool-index"><span>01</span><b>Colors</b></div>
           <div class="world">
             <div class="aurora" aria-hidden="true"></div>
             <div class="stage-poster" aria-hidden="true">

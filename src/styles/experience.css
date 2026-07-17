@@ -16,6 +16,28 @@
   inset-block: 76px 104px;
 }
 
+.color-experience {
+  min-height: calc(100svh - 92px);
+}
+
+.color-experience .world {
+  inset-block: 0 112px;
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 50% 48%, rgba(169, 116, 255, 0.13), transparent 42%),
+    linear-gradient(90deg, transparent 49.9%, rgba(255, 255, 255, 0.035) 50%, transparent 50.1%);
+}
+
+.color-experience .tool-index {
+  z-index: 7;
+}
+
+.color-experience .action-rail {
+  min-height: 112px;
+  padding: 24px 28px;
+  background: rgba(5, 6, 10, 0.76);
+}
+
 .versus {
   bottom: 12.5%;
 }
