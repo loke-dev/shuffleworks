@@ -4,10 +4,14 @@
   .landing-header .site-nav::-webkit-scrollbar,.topbar .site-nav::-webkit-scrollbar { display:none; }
   .landing-header .site-nav a,.topbar .site-nav a { padding:8px 6px; font-size:.52rem; letter-spacing:.05em; }
   .topbar .mode-index { display:none; }
-  .landing-hero { min-height:810px; padding:150px 22px 70px; justify-content:flex-end; }
-  .landing-hero h1 { font-size:clamp(3.8rem,17vw,5.8rem); }
-  .landing-orbit { top:8%; right:-55%; width:125vw; opacity:.72; }
+  .landing-hero { min-height:0; grid-template-columns:1fr; gap:0; padding:0; }
+  .landing-copy { padding:64px 22px 54px; }
+  .landing-hero h1 { font-size:clamp(3.5rem,15vw,5.3rem); }
   .landing-lede { margin:28px 0; font-size:.98rem; }
+  .mode-launcher { margin:0 12px 12px; border-radius:18px; }
+  .mode-launcher a { min-height:96px; padding:14px; }
+  .mode-launcher a:last-of-type { min-height:84px; }
+  .mode-launcher a b { font-size:.92rem; }
   .mode-library { padding:84px 12px; }
   .mode-library > header { grid-template-columns:1fr; gap:30px; }
   .mode-library h2,.landing-manifesto > p { font-size:clamp(3rem,13vw,4.6rem); }
