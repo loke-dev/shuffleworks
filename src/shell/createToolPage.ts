@@ -1,4 +1,5 @@
 import { brandMarkup, footerMarkup, navigationMarkup } from './shared'
+import { bindSpaceShortcut } from '../lib/shortcuts'
 
 export type ToolPageOptions = {
   id: string
@@ -25,6 +26,10 @@ export function createToolPage(root: HTMLElement, options: ToolPageOptions) {
     ${footerMarkup(new Date().getFullYear())}
     <p class="sr-only" aria-live="assertive" data-announcement></p>
   </div>`
+  bindSpaceShortcut(() => {
+    const action=root.querySelector<HTMLButtonElement>('.tool-action')
+    if (action && !action.disabled) action.click()
+  })
   return {
     stage: root.querySelector<HTMLElement>('[data-tool-stage]')!,
     announcement: root.querySelector<HTMLElement>('[data-announcement]')!,

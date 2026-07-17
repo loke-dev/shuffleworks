@@ -1,6 +1,7 @@
 import type { ShuffleEngine } from '../engine/ShuffleEngine'
 import type { ShuffleMode } from '../engine/types'
 import type { AppShell } from '../shell/types'
+import { isSpaceShortcut } from '../lib/shortcuts'
 
 export async function runMode(shell: AppShell, engine: ShuffleEngine, mode: ShuffleMode, autoShuffle = true) {
   await engine.start(mode)
@@ -22,7 +23,7 @@ export async function runMode(shell: AppShell, engine: ShuffleEngine, mode: Shuf
   shell.onShuffle(shuffle)
   window.addEventListener('keydown', (event) => {
     const refresh = event.code === 'F5' || ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'r')
-    if (refresh || (event.code === 'Space' && event.target === document.body)) {
+    if (refresh || isSpaceShortcut(event)) {
       event.preventDefault()
       void shuffle()
     }

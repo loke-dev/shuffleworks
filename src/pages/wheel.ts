@@ -73,7 +73,6 @@ export function renderWheel(root: HTMLElement) {
   }
   textarea.addEventListener('input', render)
   buttons.forEach((button) => button.addEventListener('click', spin))
-  window.addEventListener('keydown', (event) => { if (event.code === 'Space' && event.target === document.body) { event.preventDefault(); spin() } })
   render()
 }
 
