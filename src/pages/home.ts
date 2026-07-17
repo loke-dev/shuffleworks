@@ -32,7 +32,7 @@ export function renderHome(root: HTMLElement) {
           ${modeCard('/wheel','03 / Momentum','Spin a wheel','wheel','Custom choices with weight, color, and a physical stop.')}
           ${modeCard('/coin','04 / Flip','Flip coins','coin','One coin or a handful, tossed together in polished metal.')}
           ${modeCard('/teams','05 / People','Make teams','teams','Enter names and distribute everyone across two or more teams.')}
-          ${modeCard('/cards','06 / Deck','Draw cards','cards','Shuffle a full deck and deal without replacement.')}
+          ${modeCard('/cards','06 / Deck','Draw cards','cards-spectrum','Shuffle a full deck and deal without replacement.')}
           ${modeCard('/rps','07 / Duel','Rock paper scissors','rps','The fastest classic decider, rendered as a head-to-head throw.')}
         </div>
       </section>

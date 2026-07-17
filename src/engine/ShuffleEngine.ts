@@ -15,6 +15,7 @@ export class ShuffleEngine {
   private intersectionObserver: IntersectionObserver
   private visible = true
   private intersecting = true
+  private shuffleActive = false
 
   private readonly canvas: HTMLCanvasElement
 
@@ -31,13 +32,14 @@ export class ShuffleEngine {
     this.renderer.toneMappingExposure = 1.15
     this.camera.position.set(0, 0, 10)
 
+    const stage = canvas.parentElement ?? canvas
     this.resizeObserver = new ResizeObserver(() => this.resize())
-    this.resizeObserver.observe(canvas.parentElement ?? canvas)
+    this.resizeObserver.observe(stage)
     this.intersectionObserver = new IntersectionObserver(([entry]) => {
       this.intersecting = entry.isIntersecting
       this.previousTime = performance.now()
     }, { rootMargin: '160px' })
-    this.intersectionObserver.observe(canvas)
+    this.intersectionObserver.observe(stage)
     document.addEventListener('visibilitychange', this.handleVisibility)
   }
 
@@ -60,7 +62,10 @@ export class ShuffleEngine {
 
   shuffle(): Promise<ShuffleResult> {
     if (!this.mode) throw new Error('No shuffle mode mounted')
-    return this.mode.shuffle()
+    const shuffle = this.mode.shuffle()
+    this.shuffleActive = true
+    this.previousTime = performance.now()
+    return shuffle.finally(() => { this.shuffleActive = false })
   }
 
   private viewport(): Viewport {
@@ -80,7 +85,7 @@ export class ShuffleEngine {
 
   private animate = (now: number) => {
     requestAnimationFrame(this.animate)
-    if (!this.visible || !this.intersecting || now - this.previousFrame < this.frameInterval) return
+    if (!this.visible || (!this.intersecting && !this.shuffleActive) || now - this.previousFrame < this.frameInterval) return
     const delta = Math.min((now - this.previousTime) / 1000, 0.05)
     this.previousTime = now
     this.previousFrame = now
