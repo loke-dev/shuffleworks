@@ -15,7 +15,7 @@ export function navigationMarkup(active?: string) {
     ['cards', 'Cards'],
     ['rps', 'RPS'],
   ]
-  return `<details class="nav-menu">
+  return `<details class="nav-menu" open>
     <summary class="nav-toggle">
       <span class="sr-only">Shuffle modes</span>
       <i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
@@ -28,8 +28,15 @@ export function navigationMarkup(active?: string) {
 
 export function initializeNavigation() {
   const menus = document.querySelectorAll<HTMLDetailsElement>('.nav-menu')
+  const mobileNavigation = window.matchMedia('(max-width: 760px)')
 
-  const closeMenus = () => menus.forEach((menu) => { menu.open = false })
+  const syncNavigation = () => menus.forEach((menu) => { menu.open = !mobileNavigation.matches })
+  const closeMenus = () => {
+    if (mobileNavigation.matches) menus.forEach((menu) => { menu.open = false })
+  }
+
+  syncNavigation()
+  mobileNavigation.addEventListener('change', syncNavigation)
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeMenus()

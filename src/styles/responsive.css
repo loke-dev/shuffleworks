@@ -68,8 +68,11 @@
   }
 
   .nav-menu {
+    position: static;
+    width: auto;
     display: block;
     margin-left: auto;
+    transform: none;
   }
 
   .nav-toggle {

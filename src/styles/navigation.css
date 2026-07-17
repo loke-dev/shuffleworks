@@ -1,15 +1,18 @@
 .brand { color: inherit; text-decoration: none; }
 
-.nav-menu { display: contents; }
+.nav-menu {
+  position: absolute;
+  left: 50%;
+  width: max-content;
+  display: block;
+  transform: translateX(-50%);
+}
 
 .nav-toggle { display: none; }
 
 .site-nav {
-  position: absolute;
-  left: 50%;
   display: flex;
   gap: 3px;
-  transform: translateX(-50%);
   padding: 5px;
   border: 1px solid var(--line);
   border-radius: 99px;
