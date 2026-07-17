@@ -24,14 +24,8 @@ export function renderWheel(root: HTMLElement) {
   const getEntries = () => textarea.value.split('\n').map((item) => item.trim()).filter(Boolean).slice(0, 24)
   const normalizeAngle = (angle: number) => ((angle % 360) + 360) % 360
   const isUpsideDown = (angle: number) => {
-    const normalized = normalizeAngle(angle + rotation - 90)
+    const normalized = normalizeAngle(angle - 90)
     return normalized > 90 && normalized < 270
-  }
-  const orientLabels = () => {
-    wheel.querySelectorAll<HTMLElement>('[data-angle]').forEach((label) => {
-      const angle = Number(label.dataset.angle)
-      label.classList.toggle('is-flipped', isUpsideDown(angle))
-    })
   }
   const render = () => {
     const values = getEntries()
@@ -67,7 +61,6 @@ export function renderWheel(root: HTMLElement) {
       const pointerAngle = normalizeAngle(-rotation)
       const winner = Math.floor(pointerAngle / (360 / values.length)) % values.length
       wheel.classList.remove('is-spinning')
-      orientLabels()
       wheel.querySelector(`[data-index="${winner}"]`)?.classList.add('is-selected')
       outcome.innerHTML = `<span>Selected</span><b>${escapeHtml(values[winner])}</b>`
       page.announcement.textContent = `Selected ${values[winner]}`
