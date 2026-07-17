@@ -9,6 +9,7 @@ export class ShuffleEngine {
   private mode: ShuffleMode | null = null
   private previousTime = 0
   private previousFrame = 0
+  private simulationTime = 0
   private frameInterval = 1000 / 60
   private resizeObserver: ResizeObserver
   private intersectionObserver: IntersectionObserver
@@ -22,7 +23,7 @@ export class ShuffleEngine {
     this.renderer = new THREE.WebGLRenderer({
       canvas,
       alpha: true,
-      antialias: true,
+      antialias: window.devicePixelRatio < 2.25,
       powerPreference: 'high-performance',
     })
     this.renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -83,7 +84,8 @@ export class ShuffleEngine {
     const delta = Math.min((now - this.previousTime) / 1000, 0.05)
     this.previousTime = now
     this.previousFrame = now
-    this.mode?.update(now / 1000, delta)
+    this.simulationTime += delta
+    this.mode?.update(this.simulationTime, delta)
     this.render()
   }
 
