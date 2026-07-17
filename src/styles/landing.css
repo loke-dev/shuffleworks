@@ -25,6 +25,7 @@
 .mode-launcher a:last-of-type { grid-column:1/-1; min-height:104px; }
 .mode-launcher a span { align-self:start; color:rgba(255,255,255,.26); font:.54rem var(--mono); }
 .mode-launcher a i { grid-column:1; grid-row:2; color:var(--paper); font:500 clamp(1.45rem,2.5vw,2.4rem) var(--sans); font-style:normal; }
+.mode-launcher a i svg { width:34px; height:34px; display:block; }
 .mode-launcher a b { grid-column:2; grid-row:2; font-size:clamp(1rem,1.4vw,1.28rem); font-weight:540; }
 .mode-launcher a em { grid-column:3; grid-row:1/3; color:var(--muted); font-style:normal; }
 

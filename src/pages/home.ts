@@ -20,7 +20,7 @@ export function renderHome(root: HTMLElement) {
           ${launchLink('/coin', '04', 'Coin', '◎')}
           ${launchLink('/teams', '05', 'Teams', '↗↙')}
           ${launchLink('/cards', '06', 'Cards', 'A♠')}
-          ${launchLink('/rps', '07', 'RPS', '✊')}
+          ${launchLink('/rps', '07', 'RPS', rpsIcon)}
         </nav>
       </section>
 
@@ -50,3 +50,5 @@ export function renderHome(root: HTMLElement) {
 function modeCard(href:string,index:string,title:string,preview:string,copy:string){return `<a class="mode-card" href="${href}"><span class="mode-card-index">${index}</span><figure class="mode-preview" aria-hidden="true"><img src="/previews/${preview}.jpg" alt="" loading="lazy" decoding="async"></figure><div><h3>${title}</h3><p>${copy}</p></div><b>Open mode ↗</b></a>`}
 
 function launchLink(href:string,index:string,label:string,symbol:string){return `<a href="${href}"><span>${index}</span><i aria-hidden="true">${symbol}</i><b>${label}</b><em>↗</em></a>`}
+
+const rpsIcon = `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15V9a2.5 2.5 0 0 1 5 0v5M13 14V7a2.5 2.5 0 0 1 5 0v7M18 14V8a2.5 2.5 0 0 1 5 0v7M23 15v-4a2.5 2.5 0 0 1 5 0v7.5C28 24.4 24.2 28 18.3 28h-2.5C9.7 28 6 24.2 6 18.3V15l-1.1-1.4a2.6 2.6 0 0 1 4-3.3L12 14"/></svg>`
