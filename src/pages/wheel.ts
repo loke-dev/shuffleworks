@@ -19,10 +19,12 @@ export function renderWheel(root: HTMLElement) {
   const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-spin]')]
   let turns = 0
   let rotation = 0
+  let settleTimer = 0
   textarea.value = entries.join('\n')
   const getEntries = () => textarea.value.split('\n').map((item) => item.trim()).filter(Boolean).slice(0, 24)
+  const normalizeAngle = (angle: number) => ((angle % 360) + 360) % 360
   const isUpsideDown = (angle: number) => {
-    const normalized = ((angle + rotation) % 360 + 360) % 360
+    const normalized = normalizeAngle(angle + rotation - 90)
     return normalized > 90 && normalized < 270
   }
   const orientLabels = () => {
@@ -37,26 +39,43 @@ export function renderWheel(root: HTMLElement) {
     wheel.style.background = values.length ? `conic-gradient(${values.map((_, index) => `${colors[index % colors.length]} ${index / values.length * 100}% ${(index + 1) / values.length * 100}%`).join(',')})` : '#161822'
     wheel.innerHTML = values.map((value, index) => {
       const angle = (index + .5) / values.length * 360
-      return `<span data-angle="${angle}" class="${isUpsideDown(angle) ? 'is-flipped' : ''}" style="--angle:${angle}deg"><b>${escapeHtml(value)}</b></span>`
+      const classes = [isUpsideDown(angle) ? 'is-flipped' : '', value.length > 9 ? 'is-long' : ''].filter(Boolean).join(' ')
+      return `<span data-angle="${angle}" data-index="${index}" class="${classes}" style="--angle:${angle}deg"><b>${escapeHtml(value)}</b></span>`
     }).join('')
     saveLocal(KEY, values)
   }
   const spin = () => {
     const values = getEntries(); if (values.length < 2) return
     buttons.forEach((button) => { button.disabled = true })
-    const winner = randomInt(values.length)
+    const target = randomInt(values.length)
     turns += 5 + randomInt(3)
-    const center = (winner + .5) / values.length * 360
+    const center = (target + .5) / values.length * 360
     rotation = turns * 360 - center
     wheel.classList.add('is-spinning')
+    wheel.querySelector('.is-selected')?.classList.remove('is-selected')
+    textarea.disabled = true
     wheel.style.transform = `rotate(${rotation}deg)`
-    window.setTimeout(() => {
+    let settled = false
+    const onTransitionEnd = (event: TransitionEvent) => {
+      if (event.target === wheel && event.propertyName === 'transform') settle()
+    }
+    const settle = () => {
+      if (settled) return
+      settled = true
+      window.clearTimeout(settleTimer)
+      wheel.removeEventListener('transitionend', onTransitionEnd)
+      const pointerAngle = normalizeAngle(-rotation)
+      const winner = Math.floor(pointerAngle / (360 / values.length)) % values.length
       wheel.classList.remove('is-spinning')
       orientLabels()
+      wheel.querySelector(`[data-index="${winner}"]`)?.classList.add('is-selected')
       outcome.innerHTML = `<span>Selected</span><b>${escapeHtml(values[winner])}</b>`
       page.announcement.textContent = `Selected ${values[winner]}`
+      textarea.disabled = false
       buttons.forEach((button) => { button.disabled = false })
-    }, 3400)
+    }
+    wheel.addEventListener('transitionend', onTransitionEnd)
+    settleTimer = window.setTimeout(settle, 3800)
   }
   textarea.addEventListener('input', render)
   buttons.forEach((button) => button.addEventListener('click', spin))
