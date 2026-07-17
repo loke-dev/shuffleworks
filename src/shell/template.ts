@@ -2,7 +2,7 @@ import { brandMarkup, footerMarkup, navigationMarkup } from './shared'
 
 export function createAppMarkup(year: number) {
   return `
-    <div class="app-shell">
+    <div class="app-shell color-shell">
       <main>
         <section class="experience" aria-label="Color team shuffle">
           <header class="topbar">

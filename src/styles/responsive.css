@@ -45,3 +45,115 @@
 @media (min-width:761px) and (max-width:1100px) {
   .landing-header .brand strong,.topbar .brand strong { display:none; }
 }
+
+/* On phones the game owns the viewport and its primary action follows the thumb. */
+@media (max-width: 760px) {
+  .color-shell,
+  .dice-shell,
+  .tool-shell {
+    padding-bottom: calc(90px + env(safe-area-inset-bottom));
+  }
+
+  .landing-header,
+  .topbar {
+    min-height: 112px;
+    padding: 12px 14px 0;
+  }
+
+  .landing-header .site-nav,
+  .topbar .site-nav {
+    right: 10px;
+    bottom: 8px;
+    left: 10px;
+  }
+
+  .color-shell .shuffle,
+  .dice-shell .dice-roll,
+  .tool-shell .tool-action {
+    position: fixed;
+    z-index: 70;
+    right: 16px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    left: 16px;
+    width: auto;
+    max-width: 520px;
+    min-width: 0;
+    min-height: 62px;
+    margin-inline: auto;
+    box-shadow:
+      0 0 0 8px rgb(9 11 17 / 72%),
+      0 18px 54px rgb(0 0 0 / 52%);
+  }
+
+  .experience {
+    min-height: 100svh;
+  }
+
+  .world {
+    inset-block: 112px 90px;
+  }
+
+  .action-rail {
+    height: 0;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    backdrop-filter: none;
+  }
+
+  .action-rail .instruction,
+  .action-rail .draw-count {
+    display: none;
+  }
+
+  .dice-experience {
+    min-height: max(820px, 100svh);
+  }
+
+  .dice-world {
+    inset: 112px 0 330px;
+  }
+
+  .dice-controls {
+    bottom: 86px;
+    min-height: 244px;
+    align-content: center;
+    gap: 12px;
+    padding: 12px 16px;
+    backdrop-filter: none;
+  }
+
+  .dice-controls fieldset button {
+    min-height: 42px;
+  }
+
+  .tool-shell .tool-stage {
+    min-height: calc(100svh - 112px);
+    padding: 28px 12px 108px;
+  }
+
+  .tool-shell .tool-controls {
+    padding: 18px 16px 24px;
+    backdrop-filter: none;
+  }
+
+  .tool-shell .tool-outcome {
+    bottom: 100px;
+  }
+
+  .tool-shell .wheel-wrap {
+    width: min(90vw, 430px);
+  }
+
+  .mode-intro,
+  .tool-shell .tool-heading {
+    min-height: 400px;
+    padding: 64px 22px;
+  }
+
+  .mode-intro h1,
+  .tool-shell .tool-heading h1 {
+    font-size: clamp(3rem, 13vw, 4.7rem);
+  }
+}
