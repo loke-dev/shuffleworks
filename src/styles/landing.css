@@ -32,19 +32,18 @@
 .mode-library > header { display:grid; grid-template-columns:.7fr 1.3fr; margin-bottom: clamp(60px,8vw,110px); }
 .mode-library h2,.landing-manifesto > p { margin:0; font-size:clamp(3.5rem,6vw,6.6rem); font-weight:510; letter-spacing:-.065em; line-height:.92; }
 .mode-cards { display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); }
-.mode-card { position:relative; min-height:560px; display:flex; flex-direction:column; justify-content:space-between; padding:34px; overflow:hidden; color:inherit; background:#090a0f; text-decoration:none; }
+.mode-card { position:relative; min-height:520px; display:flex; flex-direction:column; justify-content:space-between; padding:30px; overflow:hidden; color:inherit; background:#090a0f; text-decoration:none; }
 .mode-card:before { content:""; position:absolute; inset:0; background:radial-gradient(circle at 50% 45%,rgba(169,116,255,.16),transparent 42%); transition:transform .5s,opacity .5s; }
 .mode-card:hover:before { transform:scale(1.18); opacity:1.4; }
 .mode-card-index,.mode-card > b { position:relative; z-index:2; font:.58rem var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
-.mode-card h3 { margin:0 0 12px; font-size:clamp(2.2rem,3.6vw,4rem); font-weight:520; letter-spacing:-.055em; }
+.mode-card h3 { margin:0 0 10px; font-size:clamp(2rem,3.2vw,3.5rem); font-weight:520; letter-spacing:-.055em; }
 .mode-card p { max-width:38ch; color:var(--muted); line-height:1.6; }
-.mode-card > div:last-of-type { position:relative; z-index:2; }
-.mini-deck { position:absolute!important; inset:17% 12% 32%; }
-.mini-deck i { position:absolute; left:50%; top:50%; width:22%; aspect-ratio:.67; border-radius:14%; background:var(--c); transform:translate(-50%,-50%) rotate(var(--r)) translateX(var(--x)); box-shadow:0 25px 60px rgba(0,0,0,.4); }
-.mini-deck i:nth-child(1){--c:var(--yellow);--r:-16deg;--x:-120%}.mini-deck i:nth-child(2){--c:var(--purple);--r:-5deg;--x:-38%}.mini-deck i:nth-child(3){--c:var(--blue);--r:5deg;--x:38%}.mini-deck i:nth-child(4){--c:var(--red);--r:16deg;--x:120%}
-.mini-die { position:absolute; left:50%; top:42%; width:190px; aspect-ratio:1; transform:translate(-50%,-50%) rotate(-11deg); border:1px solid rgba(255,255,255,.3); border-radius:22%; background:linear-gradient(145deg,rgba(255,255,255,.2),rgba(169,116,255,.08)); box-shadow:inset 0 0 45px rgba(255,255,255,.06),0 35px 100px rgba(0,0,0,.5); }
-.mini-die i { position:absolute; width:12px; height:12px; border-radius:50%; background:white; }.mini-die i:nth-child(1){left:23%;top:23%}.mini-die i:nth-child(2){right:23%;top:23%}.mini-die i:nth-child(3){left:50%;top:50%}.mini-die i:nth-child(4){left:23%;bottom:23%}.mini-die i:nth-child(5){right:23%;bottom:23%}
-.mode-card-symbol{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);color:var(--paper);font:500 clamp(4rem,8vw,8rem) var(--sans);font-style:normal;text-shadow:0 25px 80px rgba(169,116,255,.4)}
+.mode-card > div:last-of-type { position:absolute; z-index:2; right:30px; bottom:58px; left:30px; }
+.mode-card > b { position:absolute; left:30px; bottom:28px; }
+.mode-preview { position:absolute; z-index:1; inset:70px 26px 220px; margin:0; overflow:hidden; border:1px solid rgba(255,255,255,.13); border-radius:14px; background:#06070b; box-shadow:0 24px 70px rgba(0,0,0,.42); }
+.mode-preview:after { content:""; position:absolute; inset:0; background:linear-gradient(145deg,rgba(255,255,255,.07),transparent 38%,rgba(4,5,9,.18)); pointer-events:none; }
+.mode-preview img { width:100%; height:100%; display:block; object-fit:cover; object-position:center top; filter:saturate(.88) brightness(.9); transform:scale(1.01); transition:filter .45s,transform .6s cubic-bezier(.22,1,.36,1); }
+.mode-card:hover .mode-preview img { filter:saturate(1.08) brightness(1); transform:scale(1.045); }
 
 .landing-manifesto { min-height:620px; display:grid; align-content:center; gap:60px; padding:clamp(80px,10vw,150px) clamp(24px,7vw,108px); border-inline:1px solid var(--line); }
 .landing-manifesto > p { max-width:1100px; }

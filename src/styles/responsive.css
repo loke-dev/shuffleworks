@@ -16,8 +16,10 @@
   .mode-library > header { grid-template-columns:1fr; gap:30px; }
   .mode-library h2,.landing-manifesto > p { font-size:clamp(3rem,13vw,4.6rem); }
   .mode-cards { grid-template-columns:1fr; }
-  .mode-card { min-height:510px; padding:26px; }
-  .mini-deck { inset:15% 8% 36%; }
+  .mode-card { min-height:450px; padding:22px; }
+  .mode-card > div:last-of-type { right:22px; bottom:52px; left:22px; }
+  .mode-card > b { left:22px; bottom:20px; }
+  .mode-preview { inset:58px 16px 200px; border-radius:11px; }
   .landing-manifesto { min-height:540px; padding:84px 22px; }
 
   .experience { min-height: 100svh; }
@@ -244,5 +246,24 @@
   .mode-intro h1,
   .tool-shell .tool-heading h1 {
     font-size: clamp(3rem, 13vw, 4.7rem);
+  }
+
+  .next-mode {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 48px 24px;
+    overflow: hidden;
+  }
+
+  .next-mode .die {
+    width: 92px;
+  }
+
+  .next-mode > div {
+    min-width: 0;
+  }
+
+  .next-mode h2 {
+    font-size: clamp(2.5rem, 12vw, 3.2rem);
   }
 }
