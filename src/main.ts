@@ -1,5 +1,6 @@
 import './style.css'
 import { resolveRoute } from './router'
+import { initializeNavigation } from './shell/shared'
 
 const root = document.querySelector<HTMLDivElement>('#app')
 if (!root) throw new Error('Shuffleworks root not found')
@@ -29,3 +30,5 @@ if (route === 'home') {
   const { renderNotFound } = await import('./pages/notFound')
   renderNotFound(root)
 }
+
+initializeNavigation()

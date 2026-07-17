@@ -1,5 +1,9 @@
 .brand { color: inherit; text-decoration: none; }
 
+.nav-menu { display: contents; }
+
+.nav-toggle { display: none; }
+
 .site-nav {
   position: absolute;
   left: 50%;
