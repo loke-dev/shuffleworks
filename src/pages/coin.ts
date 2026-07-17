@@ -17,14 +17,12 @@ export function renderCoin(root: HTMLElement) {
   let settleTimer = 0
   const render = (results = Array.from({length:Number(count.value)}, () => 'H')) => {
     field.innerHTML = results.map((result, index) => {
-      const graphic=result==='H'
-        ? '<svg viewBox="0 0 100 100"><circle cx="50" cy="34" r="18"/><path d="M21 84c3-22 14-34 29-34s26 12 29 34z"/></svg>'
-        : '<svg viewBox="0 0 100 100"><path d="M50 9 60 38 91 50 60 61 50 91 39 61 9 50 39 38z"/><circle cx="50" cy="50" r="12"/></svg>'
-      const emblem=`<b class="coin-emblem ${result==='H'?'coin-portrait':'coin-compass'}" aria-hidden="true">${graphic}</b>`
+      const heads='<b class="coin-emblem coin-portrait" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="34" r="18"/><path d="M21 84c3-22 14-34 29-34s26 12 29 34z"/></svg></b>'
+      const tails='<b class="coin-emblem coin-compass" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 9 60 38 91 50 60 61 50 91 39 61 9 50 39 38z"/><circle cx="50" cy="50" r="12"/></svg></b>'
       return `<button type="button" class="coin-object" data-result="${result}" style="--delay:${index * 45}ms" aria-label="Flip ${results.length === 1 ? 'coin' : `coin ${index + 1}`}">
         <span class="coin-body">
-          <span class="coin-face coin-front">${emblem}</span>
-          <span class="coin-face coin-back">${emblem}</span>
+          <span class="coin-face coin-front">${heads}</span>
+          <span class="coin-face coin-back">${tails}</span>
           <span class="coin-edge" aria-hidden="true"></span>
         </span>
       </button>`
