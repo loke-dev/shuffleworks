@@ -44,7 +44,7 @@
 .coin-object { --landing:0deg; position:relative; width:clamp(92px,10vw,138px); display:block; padding:0; border:0; color:inherit; background:none; box-shadow:none; transform:translate3d(0,0,0); cursor:pointer; will-change:transform; -webkit-tap-highlight-color:transparent; }
 .coin-object:only-child { width:clamp(190px,22vw,270px); }
 .coin-object[data-result="T"] { --landing:180deg; }
-.coin-body { position:absolute; inset:0; display:block; transform:rotateY(0); transform-style:preserve-3d; will-change:transform; }
+.coin-body { position:absolute; inset:0; display:block; transform:rotateY(0); transform-style:preserve-3d; -webkit-transform-style:preserve-3d; will-change:transform; }
 .coin-face { position:absolute; inset:0; display:grid; place-items:center; padding:15%; overflow:hidden; border:4px solid #826a21; border-radius:50%; backface-visibility:hidden; -webkit-backface-visibility:hidden; color:#4a3710; background:radial-gradient(circle at 31% 24%,#fff7bd 0 5%,#f5d761 24%,#c89624 64%,#72551a 100%); box-shadow:inset 0 0 0 5px rgba(255,246,179,.42),inset 0 0 0 8px rgba(92,64,10,.35),inset 8px 10px 20px rgba(255,255,255,.32),inset -11px -14px 22px rgba(68,43,5,.36),0 24px 28px rgba(0,0,0,.34); }
 .coin-face::before { content:""; position:absolute; inset:13%; border:1px dashed rgba(83,58,10,.55); border-radius:50%; box-shadow:0 0 0 3px rgba(255,244,173,.17); }
 .coin-face::after { content:""; position:absolute; inset:25%; border:1px solid rgba(74,52,10,.24); border-radius:50%; background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.09) 0 7deg,transparent 7deg 15deg); }
@@ -57,16 +57,8 @@
 .coin-edge { position:absolute; z-index:-1; inset:1px; border:7px ridge #b88b2d; border-radius:50%; transform:translateZ(-2px); background:transparent; box-shadow:0 0 0 2px #3e2d0d; pointer-events:none; }
 .coin-field.is-flipping .coin-object { animation:coin-flight 1.85s linear var(--delay) both; }
 .coin-field.is-flipping .coin-body { animation:coin-spin 1.85s linear var(--delay) both; }
-.coin-field.is-flipping .coin-object[data-result="H"] .coin-front { animation:coin-front-heads 1.85s step-end var(--delay) both; }
-.coin-field.is-flipping .coin-object[data-result="H"] .coin-back { animation:coin-back-heads 1.85s step-end var(--delay) both; }
-.coin-field.is-flipping .coin-object[data-result="T"] .coin-front { animation:coin-front-tails 1.85s step-end var(--delay) both; }
-.coin-field.is-flipping .coin-object[data-result="T"] .coin-back { animation:coin-back-tails 1.85s step-end var(--delay) both; }
 @keyframes coin-flight { 0%{transform:translate3d(0,0,0)} 10%{transform:translate3d(0,-50px,26px)} 20%{transform:translate3d(0,-90px,47px)} 30%{transform:translate3d(0,-118px,62px)} 40%{transform:translate3d(0,-134px,70px)} 50%{transform:translate3d(0,-140px,74px)} 60%{transform:translate3d(0,-134px,70px)} 70%{transform:translate3d(0,-118px,62px)} 80%{transform:translate3d(0,-90px,47px)} 90%{transform:translate3d(0,-50px,26px)} 100%{transform:translate3d(0,0,0)} }
 @keyframes coin-spin { from{transform:rotateY(0)} to{transform:rotateY(calc(720deg + var(--landing)))} }
-@keyframes coin-front-heads { 0%,12.49%,37.5%,62.5%,87.5%,100%{opacity:1} 12.5%,37.49%,62.49%,87.49%{opacity:0} }
-@keyframes coin-back-heads { 0%,12.49%,37.5%,62.5%,87.5%,100%{opacity:0} 12.5%,37.49%,62.49%,87.49%{opacity:1} }
-@keyframes coin-front-tails { 0%,9.99%,30%,50%,70%,90%{opacity:1} 10%,29.99%,49.99%,69.99%,89.99%,100%{opacity:0} }
-@keyframes coin-back-tails { 0%,9.99%,30%,50%,70%,90%{opacity:0} 10%,29.99%,49.99%,69.99%,89.99%,100%{opacity:1} }
 
 /* Persistent interactive deck */
 .deck-stage { width:min(100%,900px); display:grid; grid-template-columns:180px minmax(0,1fr); align-items:center; gap:clamp(36px,7vw,90px); }
@@ -99,7 +91,7 @@
 @keyframes deck-lift { 45%{transform:translate(22px,-28px) rotate(8deg)} }
 @keyframes deck-open { 0%{opacity:.2;transform:scale(.78) rotateY(-22deg)} 65%{transform:scale(1.05) rotateY(4deg)} to{opacity:1;transform:none} }
 
-/* Three distinct beats: the move is revealed as the third shake starts. */
+/* Three distinct beats: the move stays hidden until the third shake finishes. */
 .rps-arena article:first-child b { --rps-tilt:-9deg; }
 .rps-arena article:last-child b { --rps-tilt:9deg; }
 .rps-arena.is-throwing article b {

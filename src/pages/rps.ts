@@ -60,7 +60,6 @@ export function renderRps(root: HTMLElement) {
 
     const playerChoice = selected
     const opponent = choices[randomInt(choices.length)][0]
-    let iteration = 0
     let revealed = false
     let settled = false
     let fallbackTimer = 0
@@ -81,7 +80,6 @@ export function renderRps(root: HTMLElement) {
       if (settled) return
       settled = true
       window.clearTimeout(fallbackTimer)
-      player.removeEventListener('animationiteration', onIteration)
       arena.classList.remove('is-throwing')
       reveal()
 
@@ -97,13 +95,6 @@ export function renderRps(root: HTMLElement) {
       setControlsDisabled(false)
     }
 
-    const onIteration = () => {
-      iteration += 1
-      // animationiteration fires after shakes one and two. Reveal as the third begins.
-      if (iteration === 2) reveal()
-    }
-
-    player.addEventListener('animationiteration', onIteration)
     player.addEventListener('animationend', settle, { once: true })
 
     arena.classList.remove('is-throwing')
