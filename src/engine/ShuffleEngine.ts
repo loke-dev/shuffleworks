@@ -22,7 +22,7 @@ export class ShuffleEngine {
     this.renderer = new THREE.WebGLRenderer({
       canvas,
       alpha: true,
-      antialias: window.devicePixelRatio < 2.25,
+      antialias: true,
       powerPreference: 'high-performance',
     })
     this.renderer.outputColorSpace = THREE.SRGBColorSpace

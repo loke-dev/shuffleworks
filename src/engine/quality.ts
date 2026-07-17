@@ -5,7 +5,7 @@ const compactBreakpoint = 760
 export function createViewport(element: HTMLElement): Viewport {
   const bounds = element.getBoundingClientRect()
   const compact = bounds.width < compactBreakpoint
-  const pixelRatioCap = compact ? 1.25 : 1.5
+  const pixelRatioCap = 1.75
 
   return {
     width: Math.max(bounds.width, 1),

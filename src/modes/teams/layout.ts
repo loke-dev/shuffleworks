@@ -15,10 +15,10 @@ export function createTeamLayout(viewport: Viewport, verticalFov: number): TeamL
   if (viewport.compact) {
     const visibleStageHeight = Math.max(viewport.height - 520, 500)
     const cardHeightPx = Math.min(visibleStageHeight * 0.34, 188)
-    const scale = THREE.MathUtils.clamp((cardHeightPx / viewport.height * worldHeight) / 3.05, 0.42, 0.52)
+    const scale = THREE.MathUtils.clamp((cardHeightPx / viewport.height * worldHeight) / 3.05, 0.42, 0.56)
     const x = Math.min(worldWidth * 0.22, 1.35)
     const spread = (Math.min(viewport.width * 0.38, 158) / viewport.height) * worldHeight
-    const centerY = 0.35
+    const centerY = 0
     return { cameraZ, scale, slots: createSlots([[-x, spread + centerY], [x, spread + centerY], [-x, -spread + centerY], [x, -spread + centerY]]) }
   }
 

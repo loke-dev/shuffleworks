@@ -29,6 +29,13 @@
     linear-gradient(90deg, transparent 49.9%, rgba(255, 255, 255, 0.035) 50%, transparent 50.1%);
 }
 
+.color-experience .world canvas {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100% !important;
+}
+
 .color-experience .tool-index {
   z-index: 7;
 }
