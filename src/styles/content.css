@@ -1,3 +1,18 @@
+.mode-intro {
+  min-height: clamp(420px, 55vw, 680px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(80px, 10vw, 150px) clamp(24px, 5vw, 76px);
+  border: 1px solid var(--line);
+  border-top: 0;
+  background: radial-gradient(circle at 78% 45%, rgba(169, 116, 255, 0.12), transparent 28%);
+}
+
+.mode-intro h1 {
+  font-size: clamp(3.5rem, 7.2vw, 7.4rem);
+}
+
 .field-notes {
   min-height: 560px;
   display: grid;

@@ -4,17 +4,12 @@ export function createAppMarkup(year: number) {
   return `
     <div class="app-shell">
       <main>
-        <section class="experience" aria-labelledby="hero-title">
+        <section class="experience" aria-label="Color team shuffle">
           <header class="topbar">
             ${brandMarkup()}
             ${navigationMarkup('colors')}
             <div class="mode-index"><span>Spectrum</span><b>01</b></div>
           </header>
-
-          <div class="scene-copy">
-            <p class="eyebrow">A kinetic team draw</p>
-            <h1 id="hero-title">Let the colors<br><em>find their side.</em></h1>
-          </div>
 
           <div class="world">
             <div class="aurora" aria-hidden="true"></div>
@@ -36,6 +31,11 @@ export function createAppMarkup(year: number) {
             </button>
             <p class="draw-count"><b>00</b><span>draws</span></p>
           </div>
+        </section>
+
+        <section class="mode-intro" aria-labelledby="hero-title">
+          <p class="eyebrow">A kinetic team draw</p>
+          <h1 id="hero-title">Let the colors<br><em>find their side.</em></h1>
         </section>
 
         <section class="manifest" aria-labelledby="result-title">

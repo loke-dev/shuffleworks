@@ -12,9 +12,8 @@ export type DiceShell = AppShell & {
 export function createDiceShell(root: HTMLElement): DiceShell {
   root.innerHTML = `<div class="app-shell dice-shell">
     <main>
-      <section class="dice-experience" aria-labelledby="dice-title">
+      <section class="dice-experience" aria-label="Interactive dice roller">
         <header class="topbar">${brandMarkup()}${navigationMarkup('dice')}<div class="mode-index"><span>Polyhedra</span><b>02</b></div></header>
-        <div class="dice-copy"><p class="eyebrow">A configurable physics roll</p><h1 id="dice-title">Give chance<br><em>some weight.</em></h1></div>
         <div class="dice-world"><div class="dice-aura" aria-hidden="true"></div><canvas aria-label="Interactive 3D dice roll"></canvas><p class="dice-total"><span>Total</span><b data-dice-total>—</b></p><p class="render-label">Realtime polyhedra / WebGL</p></div>
         <div class="dice-controls" aria-label="Dice configuration">
           <fieldset><legend>How many</legend><div class="option-row" data-count-options>${[1,2,3,4,5,6].map((n) => `<button type="button" data-count="${n}" ${n === 2 ? 'aria-pressed="true"' : 'aria-pressed="false"'}>${n}</button>`).join('')}</div></fieldset>
@@ -22,6 +21,11 @@ export function createDiceShell(root: HTMLElement): DiceShell {
           <fieldset><legend>Face style</legend><div class="option-row face-styles"><button type="button" data-face-style="classic">Classic</button><button type="button" data-face-style="numbers">Numbers</button></div></fieldset>
           <button class="shuffle dice-roll" type="button" data-shuffle><i aria-hidden="true">↝</i><span>Roll dice</span><kbd>Space</kbd></button>
         </div>
+      </section>
+
+      <section class="mode-intro" aria-labelledby="dice-title">
+        <p class="eyebrow">A configurable physics roll</p>
+        <h1 id="dice-title">Give chance<br><em>some weight.</em></h1>
       </section>
 
       <section class="dice-result" aria-labelledby="dice-result-title">
