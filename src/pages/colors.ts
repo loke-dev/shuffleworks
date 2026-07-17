@@ -9,5 +9,5 @@ export async function renderColors(root: HTMLElement) {
     import('../engine/ShuffleEngine'),
     loadMode('teams', shell),
   ])
-  await runMode(shell, new ShuffleEngine(shell.canvas), mode)
+  await runMode(shell, new ShuffleEngine(shell.canvas), mode, false)
 }

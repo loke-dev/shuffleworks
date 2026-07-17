@@ -13,12 +13,25 @@ export function renderCoin(root: HTMLElement) {
   const field = root.querySelector<HTMLElement>('[data-coins]')!
   const outcome = root.querySelector<HTMLElement>('[data-outcome]')!
   const button = root.querySelector<HTMLButtonElement>('[data-flip]')!
-  const render = (results = Array.from({length:Number(count.value)}, () => 'S')) => { field.innerHTML = results.map((result, index) => `<i class="coin-object" style="--delay:${index * 35}ms"><span>${result}</span></i>`).join('') }
+  const render = (results = Array.from({length:Number(count.value)}, () => 'H')) => {
+    field.innerHTML = results.map((result, index) => `<i class="coin-object" data-result="${result}" style="--delay:${index * 45}ms">
+      <span class="coin-face coin-heads"><small>Shuffleworks</small><b>H</b><em>Heads</em></span>
+      <span class="coin-face coin-tails"><small>Make the call</small><b>T</b><em>Tails</em></span>
+      <span class="coin-edge" aria-hidden="true"></span>
+    </i>`).join('')
+  }
   count.addEventListener('input', () => { label.textContent = `${count.value} ${count.value === '1' ? 'coin' : 'coins'}`; render() })
   button.addEventListener('click', () => {
     const results = Array.from({length:Number(count.value)}, () => randomInt(2) ? 'H' : 'T')
     render(results); field.classList.remove('is-flipping'); void field.offsetWidth; field.classList.add('is-flipping'); button.disabled = true
-    window.setTimeout(() => { const heads=results.filter(v=>v==='H').length; outcome.innerHTML=`<span>${results.length} flipped</span><b>${heads} heads · ${results.length-heads} tails</b>`; page.announcement.textContent=outcome.textContent??''; button.disabled=false }, 1400)
+    const settleDelay = 1650 + (results.length - 1) * 45
+    window.setTimeout(() => {
+      const heads=results.filter(v=>v==='H').length
+      outcome.innerHTML=`<span>${results.length} flipped</span><b>${heads} heads · ${results.length-heads} tails</b>`
+      page.announcement.textContent=outcome.textContent??''
+      field.classList.remove('is-flipping')
+      button.disabled=false
+    }, settleDelay)
   })
   render()
 }
