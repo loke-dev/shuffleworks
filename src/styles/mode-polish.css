@@ -1,0 +1,367 @@
+/* Focused refinements shared by the tactile game modes. */
+
+/* Coin: one toss, a visible streak, and a compact five-flip ledger. */
+.coin-tool .tool-controls {
+  align-items:center;
+}
+
+.coin-control-copy {
+  display:grid;
+  gap:6px;
+}
+
+.coin-control-copy span,
+.coin-ledger header span {
+  color:var(--muted);
+  font:.56rem var(--mono);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+.coin-control-copy b {
+  font-size:1rem;
+  font-weight:520;
+}
+
+.coin-game {
+  width:min(100%,780px);
+  display:grid;
+  grid-template-columns:minmax(260px,1fr) minmax(210px,.65fr);
+  align-items:center;
+  gap:clamp(34px,7vw,84px);
+}
+
+.coin-game .coin-field {
+  min-height:340px;
+}
+
+.coin-object[data-result="T"] .coin-body {
+  transform:rotateY(180deg);
+}
+
+.coin-ledger {
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:linear-gradient(145deg,rgba(255,216,79,.055),rgba(255,255,255,.018));
+  box-shadow:0 30px 80px rgba(0,0,0,.25);
+  backdrop-filter:blur(18px);
+}
+
+.coin-ledger header {
+  min-height:86px;
+  display:grid;
+  align-content:center;
+  gap:6px;
+  padding:18px 20px;
+  border-bottom:1px solid var(--line);
+}
+
+.coin-ledger header b {
+  font-size:clamp(1.35rem,2.4vw,2rem);
+  font-weight:520;
+  letter-spacing:-.04em;
+}
+
+.coin-ledger ol {
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+
+.coin-ledger li {
+  min-height:50px;
+  display:grid;
+  grid-template-columns:30px 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding:8px 14px;
+  border-bottom:1px solid var(--line);
+}
+
+.coin-ledger li:last-child { border-bottom:0; }
+
+.coin-ledger li i {
+  width:28px;
+  aspect-ratio:1;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,216,79,.35);
+  border-radius:50%;
+  color:#1c1707;
+  background:linear-gradient(145deg,#ffe983,#a77b1f);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);
+  font:600 .58rem var(--mono);
+  font-style:normal;
+}
+
+.coin-ledger li[data-side="T"] i {
+  color:#e4c55f;
+  background:linear-gradient(145deg,#57471c,#15140f);
+}
+
+.coin-ledger li span { font-size:.82rem; }
+.coin-ledger li small { color:var(--muted); font:.48rem var(--mono); text-transform:uppercase; }
+.coin-ledger .coin-history-slot { opacity:.28; }
+.coin-ledger .coin-history-slot i { color:var(--muted); border-color:var(--line); background:rgba(255,255,255,.025); }
+
+/* Wheel: a longer high-inertia launch with a soft gravity-driven coast. */
+.tool-shell .choice-wheel {
+  transition:transform 6.2s cubic-bezier(.08,.66,.05,1);
+}
+
+/* Teams: make the generated lineups feel like a live draw board. */
+.team-board {
+  width:min(100%,980px);
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 50% 0,color-mix(in srgb,var(--tool-accent) 12%,transparent),transparent 40%),
+    rgba(7,8,13,.64);
+  box-shadow:0 34px 100px rgba(0,0,0,.28);
+}
+
+.team-board > header {
+  min-height:70px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:16px 20px;
+  border-bottom:1px solid var(--line);
+}
+
+.team-board > header span {
+  color:var(--muted);
+  font:.55rem var(--mono);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+.team-board > header b {
+  margin-left:auto;
+  font:.6rem var(--mono);
+  font-weight:400;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+
+.team-board > header > i {
+  width:8px;
+  aspect-ratio:1;
+  border-radius:50%;
+  background:var(--tool-accent);
+  box-shadow:0 0 18px var(--tool-accent);
+}
+
+.team-board .generated-teams {
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:1px;
+  padding:1px;
+  background:var(--line);
+}
+
+.generated-teams article {
+  position:relative;
+  min-height:230px;
+  overflow:hidden;
+  border:0;
+  background:
+    linear-gradient(150deg,color-mix(in srgb,var(--team) 18%,#0a0b10),#090a0f 54%),
+    #090a0f;
+  transition:opacity .26s ease,transform .26s ease,filter .26s ease;
+}
+
+.generated-teams article::after {
+  content:"";
+  position:absolute;
+  right:-36px;
+  bottom:-62px;
+  width:150px;
+  aspect-ratio:1;
+  border:1px solid color-mix(in srgb,var(--team) 30%,transparent);
+  border-radius:50%;
+  box-shadow:0 0 55px color-mix(in srgb,var(--team) 12%,transparent);
+}
+
+.generated-teams article > header {
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:12px;
+}
+
+.generated-teams article > header > i {
+  width:38px;
+  aspect-ratio:1;
+  display:grid;
+  place-items:center;
+  border:1px solid color-mix(in srgb,var(--team) 58%,var(--line));
+  border-radius:50%;
+  color:var(--team);
+  background:color-mix(in srgb,var(--team) 10%,transparent);
+  font:.55rem var(--mono);
+  font-style:normal;
+}
+
+.generated-teams article > header div { display:grid; gap:2px; }
+.generated-teams article > header span { color:var(--muted); font-size:.48rem; }
+.generated-teams article > header b { font-size:1rem; font-weight:540; }
+.generated-teams article > header em { color:var(--muted); font:.46rem var(--mono); font-style:normal; text-transform:uppercase; }
+
+.generated-teams article ol {
+  position:relative;
+  z-index:1;
+  display:grid;
+  gap:7px;
+  margin-top:22px;
+  list-style:none;
+}
+
+.generated-teams article li {
+  min-height:44px;
+  display:grid;
+  grid-template-columns:30px 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding:6px 8px;
+  border:1px solid rgba(255,255,255,.075);
+  border-radius:9px;
+  background:rgba(255,255,255,.025);
+}
+
+.generated-teams article li i {
+  width:28px;
+  aspect-ratio:1;
+  display:grid;
+  place-items:center;
+  border-radius:7px;
+  color:#090a0f;
+  background:var(--team);
+  font:650 .52rem var(--mono);
+  font-style:normal;
+}
+
+.generated-teams article li b { min-width:0; overflow:hidden; font-size:.78rem; font-weight:520; text-overflow:ellipsis; white-space:nowrap; }
+.generated-teams article li span { color:color-mix(in srgb,var(--team) 65%,white); }
+.generated-teams.is-mixing article { opacity:.12; transform:translateY(18px) scale(.97); filter:blur(5px); }
+.generated-teams.is-revealing article { animation:team-arrive .72s cubic-bezier(.16,.8,.2,1) both; animation-delay:var(--delay); }
+
+@keyframes team-arrive {
+  from { opacity:0; transform:translateY(45px) scale(.94); filter:blur(8px); }
+  62% { opacity:1; transform:translateY(-5px) scale(1.01); filter:blur(0); }
+  to { opacity:1; transform:none; filter:none; }
+}
+
+/* Colors: each pair now lives inside an explicit team bay. */
+.color-experience .axis {
+  top:7%;
+  bottom:7%;
+  width:46%;
+  height:auto;
+  border:1px solid;
+  border-radius:22px;
+  background:linear-gradient(145deg,rgba(255,255,255,.018),transparent 50%);
+}
+
+.color-experience .axis-a { left:2.5%; border-color:rgba(169,116,255,.28); }
+.color-experience .axis-b { right:2.5%; border-color:rgba(56,160,255,.28); }
+.color-experience .axis::after { top:-2px; left:26%; right:26%; }
+.color-experience .axis span,
+.color-experience .axis b { top:16px; bottom:auto; }
+.color-experience .axis span { left:18px; }
+.color-experience .axis b {
+  right:18px;
+  padding:6px 9px;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:99px;
+  background:rgba(6,7,11,.58);
+  backdrop-filter:blur(10px);
+}
+
+.color-experience .versus {
+  top:50%;
+  bottom:auto;
+  transform:translate(-50%,-50%);
+}
+
+.color-experience .versus span {
+  width:64px;
+  height:64px;
+  border:1px solid rgba(255,255,255,.34);
+  border-radius:50%;
+  background:rgba(7,8,13,.82);
+  box-shadow:0 0 0 8px rgba(7,8,13,.35),0 0 45px rgba(169,116,255,.18);
+  backdrop-filter:blur(18px);
+  color:rgba(255,255,255,.82);
+  font-size:.62rem;
+}
+
+.color-experience .versus::before,
+.color-experience .versus::after {
+  left:50%;
+  right:auto;
+  width:1px;
+  height:clamp(48px,9vh,90px);
+  background:linear-gradient(transparent,rgba(255,255,255,.28));
+}
+
+.color-experience .versus::before { top:auto; bottom:100%; }
+.color-experience .versus::after { top:100%; transform:rotate(180deg); }
+
+@media (min-width:761px) {
+  .coin-tool .tool-controls { grid-template-columns:1fr auto; }
+  .coin-tool .coin-control-copy { grid-column:1; }
+  .coin-tool .tool-action { grid-column:2; }
+}
+
+@media (max-width:760px) {
+  .coin-game { grid-template-columns:1fr; gap:8px; }
+  .coin-game .coin-field { min-height:280px; }
+  .coin-ledger { width:100%; }
+  .coin-ledger header { min-height:62px; grid-template-columns:1fr auto; align-items:center; }
+  .coin-ledger header b { font-size:1.2rem; }
+  .coin-ledger ol { display:grid; grid-template-columns:repeat(5,1fr); }
+  .coin-ledger li { min-width:0; min-height:62px; grid-template-columns:1fr; justify-items:center; gap:3px; padding:7px 3px; border-right:1px solid var(--line); border-bottom:0; }
+  .coin-ledger li:last-child { border-right:0; }
+  .coin-ledger li span { display:none; }
+  .coin-ledger li small { font-size:.4rem; }
+  .coin-tool .tool-stage { min-height:720px; align-content:start; padding-top:28px; }
+  .coin-tool .tool-outcome { bottom:96px; }
+
+  .team-board { border-radius:13px; }
+  .team-board > header { min-height:60px; padding:12px 14px; }
+  .team-board > header b { font-size:.48rem; }
+  .team-board .generated-teams { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .generated-teams article { min-height:190px; padding:12px; }
+  .generated-teams article > header { grid-template-columns:auto 1fr; gap:8px; }
+  .generated-teams article > header > i { width:30px; }
+  .generated-teams article > header em { display:none; }
+  .generated-teams article > header b { font-size:.82rem; }
+  .generated-teams article ol { gap:5px; margin-top:14px; }
+  .generated-teams article li { min-height:38px; grid-template-columns:25px 1fr; gap:7px; padding:4px 5px; }
+  .generated-teams article li i { width:24px; }
+  .generated-teams article li b { font-size:.66rem; }
+  .generated-teams article li > span { display:none; }
+  .teams-tool .tool-stage { min-height:520px; align-content:start; }
+
+  .color-experience .axis {
+    left:3%;
+    right:auto;
+    width:94%;
+    height:43%;
+    border-radius:18px;
+  }
+  .color-experience .axis-a { top:3%; bottom:auto; }
+  .color-experience .axis-b { top:auto; bottom:3%; }
+  .color-experience .axis span,
+  .color-experience .axis b { top:12px; }
+  .color-experience .axis span { left:14px; }
+  .color-experience .axis b { right:14px; }
+  .color-experience .versus { top:50%; bottom:auto; }
+  .color-experience .versus span { width:52px; height:52px; }
+  .color-experience .versus::before,
+  .color-experience .versus::after { height:24px; }
+}

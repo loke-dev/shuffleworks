@@ -2,7 +2,7 @@ import { loadLocal, randomInt, saveLocal } from '../lib/random'
 import { createToolPage } from '../shell/createToolPage'
 
 const KEY = 'shuffleworks:wheel-entries:v1'
-const SPIN_DURATION = 4200
+const SPIN_DURATION = 6200
 const LABEL_RADIUS = 34
 const fallback = ['Pizza', 'Tacos', 'Burgers', 'Sushi', 'Pasta', 'Surprise me']
 
@@ -43,7 +43,7 @@ export function renderWheel(root: HTMLElement) {
     const values = getEntries(); if (values.length < 2) return
     buttons.forEach((button) => { button.disabled = true })
     const target = randomInt(values.length)
-    turns += 5 + randomInt(3)
+    turns += 7 + randomInt(4)
     const center = (target + .5) / values.length * 360
     rotation = turns * 360 - center
     wheel.classList.add('is-spinning')
