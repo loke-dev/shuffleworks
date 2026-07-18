@@ -1,0 +1,74 @@
+[
+  {
+    "id": "home",
+    "path": "/",
+    "title": "Shuffleworks — Free Dice, Coin, Wheel & Team Tools",
+    "description": "Free online randomizers for game night and quick decisions. Roll 3D dice, flip a coin, spin a wheel, make teams, draw cards, shuffle colors, or play rock paper scissors.",
+    "image": "/previews/colors.jpg",
+    "name": "Shuffleworks",
+    "category": "GameApplication"
+  },
+  {
+    "id": "colors",
+    "path": "/colors",
+    "title": "Color Team Shuffler — Split Colors Into Teams",
+    "description": "Shuffle yellow, purple, blue, and red 3D color cards into two clear teams. A fast, visual team picker for FIFA, couch tournaments, and game night.",
+    "image": "/previews/colors.jpg",
+    "name": "Color Team Shuffler",
+    "category": "GameApplication"
+  },
+  {
+    "id": "dice",
+    "path": "/dice",
+    "title": "3D Dice Roller — D4, D6, D8, D10, D12 & D20",
+    "description": "Roll up to six realistic 3D dice online. Choose D4, D6, D8, D10, D12, or D20 dice, see every face and total, and keep a local roll history.",
+    "image": "/previews/dice.jpg",
+    "name": "3D Dice Roller",
+    "category": "GameApplication"
+  },
+  {
+    "id": "wheel",
+    "path": "/wheel",
+    "title": "Random Spinner Wheel — Add Choices & Spin",
+    "description": "Make a custom random spinner wheel with up to 24 choices. Add names, meals, games, or decisions and spin for a smooth, fair result.",
+    "image": "/previews/wheel.jpg",
+    "name": "Random Spinner Wheel",
+    "category": "GameApplication"
+  },
+  {
+    "id": "coin",
+    "path": "/coin",
+    "title": "Coin Flip Online — Heads or Tails with History",
+    "description": "Flip a realistic animated coin online for a fair heads-or-tails decision. Track the current streak and review the previous five flips.",
+    "image": "/previews/coin.jpg",
+    "name": "Online Coin Flip",
+    "category": "GameApplication"
+  },
+  {
+    "id": "teams",
+    "path": "/teams",
+    "title": "Random Team Generator — Split Names Into 2–10 Teams",
+    "description": "Enter player names and create two to ten balanced random teams. Rename each team and share the exact team lineup with one link.",
+    "image": "/previews/teams.jpg",
+    "name": "Random Team Generator",
+    "category": "GameApplication"
+  },
+  {
+    "id": "cards",
+    "path": "/cards",
+    "title": "Random Card Draw — Shuffle a 52-Card Deck",
+    "description": "Shuffle a complete playing-card deck and draw one to five cards online without replacement. The animated deck keeps track of every remaining card.",
+    "image": "/previews/cards-spectrum.jpg",
+    "name": "Random Card Draw",
+    "category": "GameApplication"
+  },
+  {
+    "id": "rps",
+    "path": "/rps",
+    "title": "Rock Paper Scissors Online — Play a Quick Round",
+    "description": "Play rock paper scissors against the computer with a classic three-shake reveal. Choose your move and keep score across quick rounds.",
+    "image": "/previews/rps.jpg",
+    "name": "Rock Paper Scissors",
+    "category": "GameApplication"
+  }
+]

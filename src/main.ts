@@ -1,5 +1,6 @@
 import './style.css'
 import { resolveRoute } from './router'
+import { applySeo } from './seo'
 import { initializeNavigation } from './shell/shared'
 
 const root = document.querySelector<HTMLDivElement>('#app')
@@ -31,4 +32,5 @@ if (route === 'home') {
   renderNotFound(root)
 }
 
+applySeo(route)
 initializeNavigation()
