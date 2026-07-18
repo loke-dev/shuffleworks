@@ -114,7 +114,7 @@ export function renderNameTeams(root: HTMLElement) {
       labels: teamLabels.slice(0, currentGroups.length),
     }))
     window.history.replaceState({}, '', url)
-    const shareData = { title: 'Shuffleworks team lineup', text: 'Here are the teams:', url: url.toString() }
+    const shareData = { title: 'Shuffleworks team lineup', url: url.toString() }
     const canShare = typeof navigator.share === 'function'
     try {
       if (canShare) await navigator.share(shareData)
