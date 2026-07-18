@@ -153,6 +153,18 @@
   background:var(--tool-accent);
   box-shadow:0 0 18px var(--tool-accent);
 }
+.team-board > header > button {
+  min-height:34px;
+  padding:0 12px;
+  border:1px solid var(--line);
+  border-radius:99px;
+  color:var(--paper);
+  background:rgba(255,255,255,.04);
+  cursor:pointer;
+  font:.5rem var(--mono);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
 
 .team-board .generated-teams {
   grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
@@ -206,9 +218,11 @@
   font-style:normal;
 }
 
-.generated-teams article > header div { display:grid; gap:2px; }
+.generated-teams article > header div { min-width:0; display:grid; gap:2px; }
 .generated-teams article > header span { color:var(--muted); font-size:.48rem; }
 .generated-teams article > header b { font-size:1rem; font-weight:540; }
+.generated-teams article > header input { width:100%; min-width:0; padding:0; border:0; border-bottom:1px solid transparent; border-radius:0; outline:0; color:var(--paper); background:transparent; font:540 1rem var(--sans); }
+.generated-teams article > header input:hover,.generated-teams article > header input:focus { border-bottom-color:color-mix(in srgb,var(--team) 65%,var(--line)); }
 .generated-teams article > header em { color:var(--muted); font:.46rem var(--mono); font-style:normal; text-transform:uppercase; }
 
 .generated-teams article ol {
@@ -334,12 +348,13 @@
   .team-board { border-radius:13px; }
   .team-board > header { min-height:60px; padding:12px 14px; }
   .team-board > header b { font-size:.48rem; }
+  .team-board > header > button { min-height:30px; padding:0 9px; font-size:.43rem; }
   .team-board .generated-teams { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .generated-teams article { min-height:190px; padding:12px; }
   .generated-teams article > header { grid-template-columns:auto 1fr; gap:8px; }
   .generated-teams article > header > i { width:30px; }
   .generated-teams article > header em { display:none; }
-  .generated-teams article > header b { font-size:.82rem; }
+  .generated-teams article > header b,.generated-teams article > header input { font-size:.82rem; }
   .generated-teams article ol { gap:5px; margin-top:14px; }
   .generated-teams article li { min-height:38px; grid-template-columns:25px 1fr; gap:7px; padding:4px 5px; }
   .generated-teams article li i { width:24px; }

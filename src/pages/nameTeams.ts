@@ -2,9 +2,13 @@ import { loadLocal, saveLocal, shuffled } from '../lib/random'
 import { createToolPage } from '../shell/createToolPage'
 
 const KEY = 'shuffleworks:team-names:v1'
+const TEAM_NAME_KEY = 'shuffleworks:team-labels:v1'
+const SHARE_PARAM = 'lineup'
 const EXAMPLE_NAMES = ['Alex', 'Sam', 'Robin', 'Charlie']
-const COLORS = ['#a974ff', '#38a0ff', '#ff625b', '#ffd84f', '#67e8c3', '#ff8ed4']
-const CALLSIGNS = ['Comets', 'Vectors', 'Sparks', 'Orbit', 'Pulse', 'Nova']
+const COLORS = ['#a974ff', '#38a0ff', '#ff625b', '#ffd84f', '#67e8c3', '#ff8ed4', '#ff9f43', '#54a0ff', '#5fdd9d', '#c8a2ff']
+const CALLSIGNS = ['Comets', 'Vectors', 'Sparks', 'Orbit', 'Pulse', 'Nova', 'Blaze', 'Tides', 'Volt', 'Quasar']
+
+type SharedLineup = { groups: string[][]; labels: string[] }
 
 export function renderNameTeams(root: HTMLElement) {
   document.title = 'Team shuffler — Shuffleworks'
@@ -17,8 +21,8 @@ export function renderNameTeams(root: HTMLElement) {
     title: 'Everyone gets<br><em>a side.</em>',
     accent: '#38a0ff',
     intro: 'Enter the players, choose the number of teams, and launch a fresh lineup.',
-    controls: `<div class="name-editor" data-names></div><button class="text-action" data-add>+ Add player</button><label class="tool-field"><span>Number of teams</span><select data-team-count>${[2, 3, 4, 5, 6].map((number) => `<option>${number}</option>`).join('')}</select></label><button class="tool-action" data-shuffle-names><span>Launch teams</span><kbd>Space</kbd></button>`,
-    stage: '<div class="team-board"><header><span>Live lineup</span><b data-team-summary>Ready to launch</b><i aria-hidden="true"></i></header><div class="generated-teams" data-generated></div></div>',
+    controls: `<div class="name-editor" data-names></div><button class="text-action" data-add>+ Add player</button><label class="tool-field"><span>Number of teams</span><select data-team-count>${Array.from({ length: 9 }, (_, index) => index + 2).map((number) => `<option>${number}</option>`).join('')}</select></label><button class="tool-action" data-shuffle-names><span>Launch teams</span><kbd>Space</kbd></button>`,
+    stage: '<div class="team-board"><header><span>Live lineup</span><b data-team-summary>Ready to launch</b><button type="button" data-share-teams>Share lineup</button><i aria-hidden="true"></i></header><div class="generated-teams" data-generated></div></div>',
   })
   root.querySelector('.tool-shell')?.classList.add('teams-tool')
 
@@ -26,8 +30,12 @@ export function renderNameTeams(root: HTMLElement) {
   const generated = root.querySelector<HTMLElement>('[data-generated]')!
   const teamCount = root.querySelector<HTMLSelectElement>('[data-team-count]')!
   const button = root.querySelector<HTMLButtonElement>('[data-shuffle-names]')!
+  const shareButton = root.querySelector<HTMLButtonElement>('[data-share-teams]')!
   const summary = root.querySelector<HTMLElement>('[data-team-summary]')!
-  let names = [...saved]
+  const shared = readSharedLineup()
+  let names = shared ? shared.groups.flat() : [...saved]
+  let teamLabels = shared?.labels ?? loadLocal<string[]>(TEAM_NAME_KEY, CALLSIGNS)
+  let currentGroups: string[][] = []
   let mixing = false
 
   const sync = () => {
@@ -54,10 +62,16 @@ export function renderNameTeams(root: HTMLElement) {
   })
 
   const renderGroups = (groups: string[][]) => {
+    currentGroups = groups.map((group) => [...group])
     generated.innerHTML = groups.map((group, index) => `<article style="--team:${COLORS[index]};--delay:${index * 70}ms">
-      <header><i>${String(index + 1).padStart(2, '0')}</i><div><span>Team ${index + 1}</span><b>${CALLSIGNS[index]}</b></div><em>${group.length} ${group.length === 1 ? 'player' : 'players'}</em></header>
+      <header><i>${String(index + 1).padStart(2, '0')}</i><div><span>Team ${index + 1}</span><input data-team-name="${index}" value="${escapeHtml(teamLabels[index] || CALLSIGNS[index])}" aria-label="Name for team ${index + 1}"></div><em>${group.length} ${group.length === 1 ? 'player' : 'players'}</em></header>
       <ol>${group.map((name) => `<li><i>${initials(name)}</i><b>${escapeHtml(name)}</b><span aria-hidden="true">↗</span></li>`).join('')}</ol>
     </article>`).join('')
+    generated.querySelectorAll<HTMLInputElement>('[data-team-name]').forEach((input) => input.addEventListener('input', () => {
+      const index = Number(input.dataset.teamName)
+      teamLabels[index] = input.value
+      saveLocal(TEAM_NAME_KEY, teamLabels)
+    }))
     summary.textContent = `${names.length} players · ${groups.length} teams · balanced`
   }
 
@@ -88,8 +102,55 @@ export function renderNameTeams(root: HTMLElement) {
 
   button.addEventListener('click', () => shuffleTeams())
   teamCount.addEventListener('change', () => shuffleTeams())
+  shareButton.addEventListener('click', async () => {
+    if (!currentGroups.length) return
+    generated.querySelectorAll<HTMLInputElement>('[data-team-name]').forEach((input) => {
+      teamLabels[Number(input.dataset.teamName)] = input.value.trim() || CALLSIGNS[Number(input.dataset.teamName)]
+    })
+    saveLocal(TEAM_NAME_KEY, teamLabels)
+    const url = new URL(window.location.href)
+    url.searchParams.set(SHARE_PARAM, encodeSharedLineup({
+      groups: currentGroups,
+      labels: teamLabels.slice(0, currentGroups.length),
+    }))
+    window.history.replaceState({}, '', url)
+    const shareData = { title: 'Shuffleworks team lineup', text: 'Here are the teams:', url: url.toString() }
+    const canShare = typeof navigator.share === 'function'
+    try {
+      if (canShare) await navigator.share(shareData)
+      else await navigator.clipboard.writeText(url.toString())
+      shareButton.textContent = canShare ? 'Shared' : 'Link copied'
+      page.announcement.textContent = canShare ? 'Team lineup shared.' : 'Team lineup link copied.'
+    } catch (error) {
+      if ((error as DOMException).name !== 'AbortError') page.announcement.textContent = 'Could not share the lineup.'
+    }
+    window.setTimeout(() => { shareButton.textContent = 'Share lineup' }, 1800)
+  })
   renderEditor()
-  shuffleTeams(false, false)
+  if (shared) {
+    teamCount.value = String(shared.groups.length)
+    renderGroups(shared.groups)
+    summary.textContent = `${names.length} players · ${shared.groups.length} teams · shared lineup`
+  } else shuffleTeams(false, false)
+}
+
+function readSharedLineup(): SharedLineup | null {
+  const encoded = new URL(window.location.href).searchParams.get(SHARE_PARAM)
+  if (!encoded) return null
+  try {
+    const parsed = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(encoded.replace(/-/g, '+').replace(/_/g, '/')), (character) => character.charCodeAt(0)))) as SharedLineup
+    if (!Array.isArray(parsed.groups) || parsed.groups.length < 2 || parsed.groups.length > 10) return null
+    if (!parsed.groups.every((group) => Array.isArray(group) && group.every((name) => typeof name === 'string'))) return null
+    const labels = Array.isArray(parsed.labels) ? parsed.labels.filter((label) => typeof label === 'string').slice(0, parsed.groups.length) : []
+    return { groups: parsed.groups, labels }
+  } catch { return null }
+}
+
+function encodeSharedLineup(lineup: SharedLineup) {
+  const bytes = new TextEncoder().encode(JSON.stringify(lineup))
+  let binary = ''
+  bytes.forEach((byte) => { binary += String.fromCharCode(byte) })
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
 
 function initials(name: string) {
