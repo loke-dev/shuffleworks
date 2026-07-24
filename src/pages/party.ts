@@ -10,24 +10,10 @@ const plannedGames = [
   },
   {
     state: 'Planned',
-    icon: '◇',
-    title: 'Secret roles',
-    copy: 'Pass the phone and privately reveal spies, impostors, and wildcards.',
-    color: '#a974ff',
-  },
-  {
-    state: 'Planned',
-    icon: '↻',
-    title: 'Bottle spin',
-    copy: 'Put everyone around the table and give the bottle a proper throw.',
-    color: '#67e8c3',
-  },
-  {
-    state: 'Planned',
-    icon: '!',
-    title: 'Hot seat',
-    copy: 'Pick a player, reveal a prompt, and keep the room moving.',
-    color: '#ff625b',
+    icon: '⌁',
+    title: 'Touch roulette',
+    copy: 'Everyone puts a finger on the screen; one glowing touch wins.',
+    color: '#ffd84f',
   },
 ]
 
@@ -68,8 +54,20 @@ export function renderParty(root: HTMLElement) {
             <span>02 / Live</span><i aria-hidden="true">✊</i><h3>RPS duel</h3>
             <p>Choose your throw and face the machine on the third shake.</p><b>Play now ↗</b>
           </a>
+          <a class="party-game is-live" href="/secret-roles" style="--party-color:#a974ff">
+            <span>03 / Live</span><i aria-hidden="true">◇</i><h3>Secret roles</h3>
+            <p>Pass the phone and privately reveal the shared word—or the impostor.</p><b>Play now ↗</b>
+          </a>
+          <a class="party-game is-live" href="/hot-seat" style="--party-color:#ff625b">
+            <span>04 / Live</span><i aria-hidden="true">!</i><h3>Hot seat</h3>
+            <p>Pick someone without repeats and give them a question or challenge.</p><b>Play now ↗</b>
+          </a>
+          <a class="party-game is-live" href="/bottle-spin" style="--party-color:#67e8c3">
+            <span>05 / Live</span><i aria-hidden="true">↻</i><h3>Bottle spin</h3>
+            <p>Arrange everyone around the table and let the final angle choose.</p><b>Play now ↗</b>
+          </a>
           ${plannedGames.map((game, index) => `<article class="party-game" style="--party-color:${game.color}">
-            <span>${String(index + 3).padStart(2, '0')} / ${game.state}</span><i aria-hidden="true">${game.icon}</i>
+            <span>${String(index + 6).padStart(2, '0')} / ${game.state}</span><i aria-hidden="true">${game.icon}</i>
             <h3>${game.title}</h3><p>${game.copy}</p><b>In the lab</b>
           </article>`).join('')}
         </div>

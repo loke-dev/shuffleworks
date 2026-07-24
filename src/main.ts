@@ -31,6 +31,12 @@ if (route === 'home') {
   const { renderParty } = await import('./pages/party'); renderParty(root)
 } else if (route === 'lootbox') {
   const { renderLootbox } = await import('./pages/lootbox'); renderLootbox(root)
+} else if (route === 'secret-roles') {
+  const { renderSecretRoles } = await import('./pages/secretRoles'); renderSecretRoles(root)
+} else if (route === 'hot-seat') {
+  const { renderHotSeat } = await import('./pages/hotSeat'); renderHotSeat(root)
+} else if (route === 'bottle-spin') {
+  const { renderBottleSpin } = await import('./pages/bottleSpin'); renderBottleSpin(root)
 } else {
   const { renderNotFound } = await import('./pages/notFound')
   renderNotFound(root)

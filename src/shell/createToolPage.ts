@@ -13,8 +13,9 @@ export type ToolPageOptions = {
 }
 
 export function createToolPage(root: HTMLElement, options: ToolPageOptions) {
+  const partyModes = new Set(['lootbox', 'secret-roles', 'hot-seat', 'bottle-spin'])
   root.innerHTML = `<div class="app-shell tool-shell" style="--tool-accent:${options.accent}">
-    <header class="landing-header">${brandMarkup()}${navigationMarkup(options.id === 'lootbox' ? 'party' : options.id)}</header>
+    <header class="landing-header">${brandMarkup()}${navigationMarkup(partyModes.has(options.id) ? 'party' : options.id)}</header>
     <main>
       <section class="tool-hero">
         <div class="tool-index"><span>${options.index}</span><b>${options.id}</b></div>
