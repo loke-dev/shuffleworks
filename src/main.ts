@@ -1,4 +1,5 @@
 import './style.css'
+import { initializeAnalytics } from './lib/analytics'
 import { resolveRoute } from './router'
 import { applySeo } from './seo'
 import { initializeNavigation } from './shell/shared'
@@ -44,3 +45,4 @@ if (route === 'home') {
 
 applySeo(route)
 initializeNavigation()
+initializeAnalytics(route)

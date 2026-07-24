@@ -1,4 +1,5 @@
 import { loadLocal, saveLocal, shuffled } from '../lib/random'
+import { trackAnalytics } from '../lib/analytics'
 import { createToolPage } from '../shell/createToolPage'
 
 const KEY = 'shuffleworks:team-names:v1'
@@ -119,6 +120,7 @@ export function renderNameTeams(root: HTMLElement) {
     try {
       if (canShare) await navigator.share(shareData)
       else await navigator.clipboard.writeText(url.toString())
+      trackAnalytics('share_completed', 'team_board', 'team_lineup')
       shareButton.textContent = canShare ? 'Shared' : 'Link copied'
       page.announcement.textContent = canShare ? 'Team lineup shared.' : 'Team lineup link copied.'
     } catch (error) {
