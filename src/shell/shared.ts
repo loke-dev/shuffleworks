@@ -55,5 +55,5 @@ export function initializeNavigation() {
 }
 
 export function footerMarkup(year: number) {
-  return `<footer><span>Shuffleworks / ${year}</span><a href="https://github.com/loke-dev/shuffleworks">Source</a></footer>`
+  return `<footer><span>Shuffleworks / ${year}</span><div><a href="https://loke.dev/privacy">Privacy</a><a href="https://github.com/loke-dev/shuffleworks">Source</a></div></footer>`
 }
