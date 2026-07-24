@@ -27,6 +27,10 @@ if (route === 'home') {
   const { renderCards } = await import('./pages/cards'); renderCards(root)
 } else if (route === 'rps') {
   const { renderRps } = await import('./pages/rps'); renderRps(root)
+} else if (route === 'party') {
+  const { renderParty } = await import('./pages/party'); renderParty(root)
+} else if (route === 'lootbox') {
+  const { renderLootbox } = await import('./pages/lootbox'); renderLootbox(root)
 } else {
   const { renderNotFound } = await import('./pages/notFound')
   renderNotFound(root)

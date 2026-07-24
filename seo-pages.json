@@ -70,5 +70,23 @@
     "image": "/previews/rps.jpg",
     "name": "Rock Paper Scissors",
     "category": "GameApplication"
+  },
+  {
+    "id": "party",
+    "path": "/party",
+    "title": "Free Party Games — Quick Games for Groups",
+    "description": "Discover fast, tactile party games for one phone and a room full of people. Play a party loot box, rock paper scissors, and more games as the collection grows.",
+    "image": "/previews/lootbox.jpg",
+    "name": "Shuffleworks Party Games",
+    "category": "GameApplication"
+  },
+  {
+    "id": "lootbox",
+    "path": "/lootbox",
+    "title": "Party Loot Box — Open Fun Perks & Dares",
+    "description": "Open a free virtual party loot box with playful perks, harmless dares, and match-night advantages. No money, purchases, accounts, or real-world prizes.",
+    "image": "/previews/lootbox.jpg",
+    "name": "Party Loot Box",
+    "category": "GameApplication"
   }
 ]

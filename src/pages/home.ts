@@ -9,11 +9,11 @@ export function renderHome(root: HTMLElement) {
         <div class="landing-copy">
           <p class="eyebrow">A digital physics lab for chance</p>
           <h1 id="landing-title">Pick a game.<br><em>Let chance move.</em></h1>
-          <p class="landing-lede">Seven tactile tools for game night, quick decisions, fair teams, and every moment that is better left to chance.</p>
+          <p class="landing-lede">Eight tactile tools for game night, quick decisions, fair teams, and every moment that is better left to chance.</p>
           <a class="primary-link" href="#modes"><span>Explore all modes</span><i>↓</i></a>
         </div>
         <nav class="mode-launcher" aria-label="Launch a shuffle mode">
-          <header><span>Live instruments</span><b>07 modes</b></header>
+          <header><span>Live instruments</span><b>08 modes</b></header>
           ${launchLink('/colors', '01', 'Colors', '◇')}
           ${launchLink('/dice', '02', 'Dice', '⚄')}
           ${launchLink('/wheel', '03', 'Wheel', '◉')}
@@ -21,11 +21,12 @@ export function renderHome(root: HTMLElement) {
           ${launchLink('/teams', '05', 'Teams', '↗↙')}
           ${launchLink('/cards', '06', 'Cards', 'A♠')}
           ${launchLink('/rps', '07', 'RPS', rpsIcon)}
+          ${launchLink('/lootbox', '08', 'Loot box', '▣')}
         </nav>
       </section>
 
       <section class="mode-library" id="modes" aria-labelledby="modes-title">
-        <header><p class="eyebrow">Choose an instrument</p><h2 id="modes-title">Seven ways to<br>leave it to chance.</h2></header>
+        <header><p class="eyebrow">Choose an instrument</p><h2 id="modes-title">Eight ways to<br>leave it to chance.</h2></header>
         <div class="mode-cards">
           ${modeCard('/colors','01 / Spectrum','Shuffle colors','colors','Four glass cards resolve into two unmistakable teams.')}
           ${modeCard('/dice','02 / Polyhedra','Roll the room','dice','Choose your dice, set the count, and give uncertainty some weight.')}
@@ -34,6 +35,18 @@ export function renderHome(root: HTMLElement) {
           ${modeCard('/teams','05 / People','Make teams','teams','Enter names and distribute everyone across two or more teams.')}
           ${modeCard('/cards','06 / Deck','Draw cards','cards-spectrum','Shuffle a full deck and deal without replacement.')}
           ${modeCard('/rps','07 / Duel','Rock paper scissors','rps','The fastest classic decider, rendered as a head-to-head throw.')}
+          ${lootboxCard()}
+        </div>
+      </section>
+
+      <section class="party-callout">
+        <div>
+          <p class="eyebrow">New collection</p>
+          <h2>Bring something<br><em>unexpected.</em></h2>
+        </div>
+        <div>
+          <p>Party games turn the room into the controller. Open a crate now, then watch the collection grow.</p>
+          <a class="primary-link" href="/party"><span>Explore party games</span><i>↗</i></a>
         </div>
       </section>
 
@@ -50,5 +63,7 @@ export function renderHome(root: HTMLElement) {
 function modeCard(href:string,index:string,title:string,preview:string,copy:string){return `<a class="mode-card" href="${href}"><span class="mode-card-index">${index}</span><figure class="mode-preview" aria-hidden="true"><img src="/previews/${preview}.jpg" alt="" loading="lazy" decoding="async"></figure><div><h3>${title}</h3><p>${copy}</p></div><b>Open mode ↗</b></a>`}
 
 function launchLink(href:string,index:string,label:string,symbol:string){return `<a href="${href}"><span>${index}</span><i aria-hidden="true">${symbol}</i><b>${label}</b><em>↗</em></a>`}
+
+function lootboxCard(){return `<a class="mode-card lootbox-home-card" href="/lootbox"><span class="mode-card-index">08 / Party drop</span><figure class="mode-preview lootbox-preview" aria-hidden="true"><div class="mini-crate"><i></i><b>?</b></div><span>Legendary fun, zero real stakes</span></figure><div><h3>Open a loot box</h3><p>Crack open party perks, playful dares, and match-night advantages.</p></div><b>Open mode ↗</b></a>`}
 
 const rpsIcon = `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15V9a2.5 2.5 0 0 1 5 0v5M13 14V7a2.5 2.5 0 0 1 5 0v7M18 14V8a2.5 2.5 0 0 1 5 0v7M23 15v-4a2.5 2.5 0 0 1 5 0v7.5C28 24.4 24.2 28 18.3 28h-2.5C9.7 28 6 24.2 6 18.3V15l-1.1-1.4a2.6 2.6 0 0 1 4-3.3L12 14"/></svg>`

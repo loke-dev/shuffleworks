@@ -14,6 +14,7 @@ export function navigationMarkup(active?: string) {
     ['teams', 'Teams'],
     ['cards', 'Cards'],
     ['rps', 'RPS'],
+    ['party', 'Party'],
   ]
   return `<details class="nav-menu" open>
     <summary class="nav-toggle">
