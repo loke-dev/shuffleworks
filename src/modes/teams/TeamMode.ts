@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { ResourceStore } from '../../engine/resources'
 import type { ModeContext, ShuffleMode, ShuffleResult, Viewport } from '../../engine/types'
+import { shuffled } from '../../lib/random'
 import type { AppShell } from '../../shell/types'
 import { CardFactory, type TeamCard } from './cardFactory'
 import { createCardAnimation, easeOutCubic, smoothstep } from './choreography'
@@ -196,11 +197,7 @@ export class TeamMode implements ShuffleMode {
   }
 
   private nextOrder() {
-    const next = [...this.order]
-    for (let index = next.length - 1; index > 0; index -= 1) {
-      const swap = Math.floor(Math.random() * (index + 1))
-      ;[next[index], next[swap]] = [next[swap], next[index]]
-    }
+    const next = shuffled(this.order)
     if (next.every((item, index) => item.id === this.order[index].id)) next.push(next.shift()!)
     return next
   }

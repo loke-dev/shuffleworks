@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { ResourceStore } from '../../engine/resources'
 import type { ModeContext, ShuffleMode, ShuffleResult, Viewport } from '../../engine/types'
+import { randomInt } from '../../lib/random'
 import { easeOutCubic, smoothstep } from '../teams/choreography'
 import { getDieFaces, type DieFace } from './faces'
 import { createDieGeometry } from './geometry'
@@ -89,7 +90,7 @@ export class DiceMode implements ShuffleMode {
     this.dice.slice(0, this.options.count).forEach((die, index) => {
       die.start.copy(die.group.position)
       die.startRotation.copy(die.body.rotation)
-      die.value = 1 + Math.floor(Math.random() * this.options.sides)
+      die.value = 1 + randomInt(this.options.sides)
       die.landingRotation.copy(this.getLandingRotation(die.value, index))
       die.endRotation.set(
         die.landingRotation.x + (3 + index % 3) * Math.PI * 2,
