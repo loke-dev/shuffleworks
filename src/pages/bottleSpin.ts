@@ -1,4 +1,5 @@
 import { loadPlayers, parsePlayers, playersValue, savePlayers } from '../lib/partyPlayers'
+import { visualDelay } from '../lib/motion'
 import { randomInt } from '../lib/random'
 import { createToolPage } from '../shell/createToolPage'
 
@@ -90,7 +91,7 @@ export function renderBottleSpin(root: HTMLElement) {
     void table.offsetWidth
     table.classList.add('is-spinning')
     bottle.style.setProperty('--bottle-rotation', `${rotation}deg`)
-    fallbackTimer = window.setTimeout(settle, 5200)
+    fallbackTimer = window.setTimeout(settle, visualDelay(5200))
   }
 
   bottle.addEventListener('transitionend', (event) => {

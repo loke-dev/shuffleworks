@@ -1,4 +1,5 @@
 import { loadLocal, randomInt, saveLocal } from '../lib/random'
+import { visualDelay } from '../lib/motion'
 import { createToolPage } from '../shell/createToolPage'
 
 type CoinSide = 'H' | 'T'
@@ -92,7 +93,7 @@ export function renderCoin(root: HTMLElement) {
     }
 
     field.querySelector('.coin-object')?.addEventListener('animationend', settle, { once: true })
-    settleTimer = window.setTimeout(settle, 1970)
+    settleTimer = window.setTimeout(settle, visualDelay(1970))
   }
 
   button.addEventListener('click', flip)

@@ -1,3 +1,4 @@
+import { visualDelay } from '../lib/motion'
 import { randomInt } from '../lib/random'
 import { createToolPage } from '../shell/createToolPage'
 
@@ -101,6 +102,6 @@ export function renderRps(root: HTMLElement) {
     void arena.offsetWidth
     arena.classList.add('is-throwing')
 
-    fallbackTimer = window.setTimeout(settle, 1600)
+    fallbackTimer = window.setTimeout(settle, visualDelay(1600))
   })
 }

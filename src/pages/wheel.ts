@@ -1,4 +1,5 @@
 import { loadLocal, randomInt, saveLocal } from '../lib/random'
+import { visualDelay } from '../lib/motion'
 import { createToolPage } from '../shell/createToolPage'
 
 const KEY = 'shuffleworks:wheel-entries:v1'
@@ -69,7 +70,7 @@ export function renderWheel(root: HTMLElement) {
       buttons.forEach((button) => { button.disabled = false })
     }
     wheel.addEventListener('transitionend', onTransitionEnd)
-    settleTimer = window.setTimeout(settle, SPIN_DURATION + 500)
+    settleTimer = window.setTimeout(settle, visualDelay(SPIN_DURATION + 500))
   }
   textarea.addEventListener('input', render)
   buttons.forEach((button) => button.addEventListener('click', spin))
