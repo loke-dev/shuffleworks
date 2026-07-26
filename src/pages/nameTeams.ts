@@ -162,7 +162,7 @@ function restoreTeamLabels() {
   return stored
     .slice(0, CALLSIGNS.length)
     .map((label, index) => {
-      if (typeof label === 'string') return label
+      if (typeof label === 'string' && label.trim()) return label.trim()
       return CALLSIGNS[index] ?? `Team ${index + 1}`
     })
 }
