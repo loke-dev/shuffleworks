@@ -8,7 +8,7 @@ const fallback = ['Pizza', 'Tacos', 'Burgers', 'Sushi', 'Pasta', 'Surprise me']
 
 export function renderWheel(root: HTMLElement) {
   document.title = 'Spinner wheel — Shuffleworks'
-  const entries = loadLocal<string[]>(KEY, fallback)
+  const entries = restoreEntries()
   const page = createToolPage(root, {
     id:'wheel', index:'03', eyebrow:'Custom decision spinner', title:'Spin the<br><em>possibilities.</em>', accent:'#a974ff',
     intro:'Add any choices, then give the wheel a physical spin.',
@@ -74,6 +74,16 @@ export function renderWheel(root: HTMLElement) {
   textarea.addEventListener('input', render)
   buttons.forEach((button) => button.addEventListener('click', spin))
   render()
+}
+
+function restoreEntries() {
+  const stored = loadLocal<unknown>(KEY, fallback)
+  if (!Array.isArray(stored)) return [...fallback]
+  return stored
+    .filter((entry): entry is string => typeof entry === 'string')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .slice(0, 24)
 }
 
 function escapeHtml(value:string){const node=document.createElement('span');node.textContent=value;return node.innerHTML}
