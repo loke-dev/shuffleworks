@@ -2,6 +2,7 @@ import { loadLocal, randomInt, saveLocal } from '../lib/random'
 import { createToolPage } from '../shell/createToolPage'
 
 type CoinSide = 'H' | 'T'
+type CoinStreak = { side: CoinSide, count: number }
 
 const HISTORY_KEY = 'shuffleworks:coin-history:v1'
 const STREAK_KEY = 'shuffleworks:coin-streak:v1'
@@ -13,10 +14,11 @@ export function renderCoin(root: HTMLElement) {
   document.title = 'Coin flip — Shuffleworks'
   const stored = loadLocal<CoinSide[]>(HISTORY_KEY, [])
   let history = Array.isArray(stored) ? stored.filter((side): side is CoinSide => side === 'H' || side === 'T').slice(0, MAX_HISTORY) : []
-  const storedStreak = loadLocal<{ side: CoinSide, count: number } | null>(STREAK_KEY, null)
-  let currentStreak = storedStreak && (storedStreak.side === 'H' || storedStreak.side === 'T') && storedStreak.count > 0
+  const historyStreak = deriveStreak(history)
+  const storedStreak = loadLocal<unknown>(STREAK_KEY, null)
+  let currentStreak = isValidStoredStreak(storedStreak, historyStreak)
     ? storedStreak
-    : deriveStreak(history)
+    : historyStreak
 
   const page = createToolPage(root, {
     id: 'coin',
@@ -99,10 +101,20 @@ export function renderCoin(root: HTMLElement) {
   renderStats()
 }
 
-function deriveStreak(history: CoinSide[]) {
+function deriveStreak(history: CoinSide[]): CoinStreak | null {
   if (!history.length) return null
   const side = history[0]
   let count = 1
   while (history[count] === side) count += 1
   return { side, count }
+}
+
+function isValidStoredStreak(value: unknown, historyStreak: CoinStreak | null): value is CoinStreak {
+  if (!historyStreak || typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false
+  }
+  const candidate = value as Record<string, unknown>
+  return candidate.side === historyStreak.side
+    && Number.isSafeInteger(candidate.count)
+    && (candidate.count as number) >= historyStreak.count
 }
