@@ -31,6 +31,7 @@ export function renderNameTeams(root: HTMLElement) {
   const generated = root.querySelector<HTMLElement>('[data-generated]')!
   const teamCount = root.querySelector<HTMLSelectElement>('[data-team-count]')!
   const button = root.querySelector<HTMLButtonElement>('[data-shuffle-names]')!
+  const addButton = root.querySelector<HTMLButtonElement>('[data-add]')!
   const shareButton = root.querySelector<HTMLButtonElement>('[data-share-teams]')!
   const summary = root.querySelector<HTMLElement>('[data-team-summary]')!
   const shared = readSharedLineup()
@@ -44,6 +45,14 @@ export function renderNameTeams(root: HTMLElement) {
     saveLocal(KEY, names)
   }
 
+  const setSetupDisabled = (disabled: boolean) => {
+    teamCount.disabled = disabled
+    addButton.disabled = disabled
+    editor.querySelectorAll<HTMLInputElement | HTMLButtonElement>('input, button').forEach((control) => {
+      control.disabled = disabled
+    })
+  }
+
   const renderEditor = () => {
     editor.innerHTML = names.map((name, index) => `<label><span>${String(index + 1).padStart(2, '0')}</span><input value="${escapeHtml(name)}" aria-label="Player ${index + 1}"><button type="button" data-remove aria-label="Remove ${escapeHtml(name)}">×</button></label>`).join('')
     editor.querySelectorAll('input').forEach((input) => input.addEventListener('input', sync))
@@ -54,7 +63,7 @@ export function renderNameTeams(root: HTMLElement) {
     }))
   }
 
-  root.querySelector('[data-add]')!.addEventListener('click', () => {
+  addButton.addEventListener('click', () => {
     sync()
     names.push('')
     renderEditor()
@@ -89,12 +98,14 @@ export function renderNameTeams(root: HTMLElement) {
       window.setTimeout(() => generated.classList.remove('is-revealing'), 1200)
       mixing = false
       button.disabled = false
+      setSetupDisabled(false)
       if (announce) page.announcement.textContent = `Created ${count} teams for ${names.length} players.`
     }
 
     if (!animate) { reveal(); return }
     mixing = true
     button.disabled = true
+    setSetupDisabled(true)
     generated.classList.add('is-mixing')
     summary.textContent = 'Redistributing players…'
     window.setTimeout(reveal, 280)
