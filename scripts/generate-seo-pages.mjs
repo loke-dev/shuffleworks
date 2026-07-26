@@ -17,6 +17,28 @@ ${pages.map((page) => `  <url><loc>${origin}${page.path}</loc></url>`).join('\n'
 `
 await writeFile(new URL('../dist/sitemap.xml', import.meta.url), sitemap)
 
+const partyIds = new Set(['party', 'lootbox', 'secret-roles', 'hot-seat', 'bottle-spin'])
+const llms = `# Shuffleworks
+
+> Free, tactile browser tools for random decisions, teams, tabletop games, and parties.
+
+Shuffleworks works without accounts or purchases. Randomizer results and party-game state stay in the browser.
+
+## Randomizers
+
+${linkList(pages.filter((page) => page.id !== 'home' && !partyIds.has(page.id)))}
+
+## Party games
+
+${linkList(pages.filter((page) => partyIds.has(page.id)))}
+
+## Optional
+
+- [Sitemap](${origin}/sitemap.xml): Complete list of indexable Shuffleworks pages.
+- [Source code](https://github.com/loke-dev/shuffleworks): Framework-free TypeScript, Vite, and Three.js application.
+`
+await writeFile(new URL('../dist/llms.txt', import.meta.url), llms)
+
 function renderHead(html, page) {
   const canonical = `${origin}${page.path}`
   const image = `${origin}${page.image}`
@@ -53,6 +75,12 @@ function renderHead(html, page) {
   return html
     .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(page.title)}</title>`)
     .replace(/<!-- seo:start -->[\s\S]*?<!-- seo:end -->/, `<!-- seo:start -->\n    ${seo}\n    <!-- seo:end -->`)
+}
+
+function linkList(items) {
+  return items
+    .map((page) => `- [${page.name}](${origin}${page.path}): ${page.description}`)
+    .join('\n')
 }
 
 function applicationFor(page) {

@@ -23,7 +23,9 @@ pnpm build
 
 ## Deployment
 
-The static `dist` directory deploys to the `shuffleworks` Cloudflare Pages project.
+The static `dist` directory deploys to the `shuffleworks` Cloudflare Pages
+project. The production build generates route-specific metadata, `sitemap.xml`,
+and an `llms.txt` guide from `seo-pages.json`.
 
 ```sh
 pnpm deploy
