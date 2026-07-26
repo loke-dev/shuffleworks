@@ -41,7 +41,13 @@ export function renderWheel(root: HTMLElement) {
     saveLocal(KEY, values)
   }
   const spin = () => {
-    const values = getEntries(); if (values.length < 2) return
+    const values = getEntries()
+    if (values.length < 2) {
+      outcome.innerHTML = '<span>Not enough choices</span><b>Add at least two entries.</b>'
+      page.announcement.textContent = 'Add at least two entries before spinning the wheel.'
+      textarea.focus()
+      return
+    }
     buttons.forEach((button) => { button.disabled = true })
     const target = randomInt(values.length)
     turns += 7 + randomInt(4)
