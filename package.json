@@ -7,9 +7,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && node scripts/generate-seo-pages.mjs",
+    "build": "tsc && node scripts/validate-route-seo.mjs && vite build && node scripts/generate-seo-pages.mjs",
     "preview": "vite preview",
     "deploy": "pnpm build && wrangler pages deploy dist --project-name shuffleworks",
+    "validate-seo": "node scripts/validate-route-seo.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
