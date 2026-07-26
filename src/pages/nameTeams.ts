@@ -14,8 +14,7 @@ type SharedLineup = { groups: string[][]; labels: string[] }
 
 export function renderNameTeams(root: HTMLElement) {
   document.title = 'Team shuffler — Shuffleworks'
-  const stored = loadLocal<string[]>(KEY, EXAMPLE_NAMES)
-  const saved = Array.isArray(stored) && stored.filter(Boolean).length >= 2 ? stored : EXAMPLE_NAMES
+  const saved = restoreNames()
   const page = createToolPage(root, {
     id: 'teams',
     index: '05',
@@ -37,7 +36,7 @@ export function renderNameTeams(root: HTMLElement) {
   const summary = root.querySelector<HTMLElement>('[data-team-summary]')!
   const shared = readSharedLineup()
   let names = shared ? shared.groups.flat() : [...saved]
-  let teamLabels = shared?.labels ?? loadLocal<string[]>(TEAM_NAME_KEY, CALLSIGNS)
+  let teamLabels = shared?.labels ?? restoreTeamLabels()
   let currentGroups: string[][] = []
   let mixing = false
 
@@ -145,6 +144,27 @@ export function renderNameTeams(root: HTMLElement) {
     renderGroups(shared.groups)
     summary.textContent = `${names.length} players · ${shared.groups.length} teams · shared lineup`
   } else shuffleTeams(false, false)
+}
+
+function restoreNames() {
+  const stored = loadLocal<unknown>(KEY, EXAMPLE_NAMES)
+  if (!Array.isArray(stored)) return [...EXAMPLE_NAMES]
+  const names = stored
+    .filter((name): name is string => typeof name === 'string')
+    .map((name) => name.trim())
+    .filter(Boolean)
+  return names.length >= 2 ? names : [...EXAMPLE_NAMES]
+}
+
+function restoreTeamLabels() {
+  const stored = loadLocal<unknown>(TEAM_NAME_KEY, CALLSIGNS)
+  if (!Array.isArray(stored)) return [...CALLSIGNS]
+  return stored
+    .slice(0, CALLSIGNS.length)
+    .map((label, index) => {
+      if (typeof label === 'string') return label
+      return CALLSIGNS[index] ?? `Team ${index + 1}`
+    })
 }
 
 function readSharedLineup(): SharedLineup | null {
