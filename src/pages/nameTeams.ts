@@ -191,7 +191,11 @@ function initials(name: string) {
 }
 
 function escapeHtml(value: string) {
-  const node = document.createElement('span')
-  node.textContent = value
-  return node.innerHTML
+  return value.replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  })[character]!)
 }
