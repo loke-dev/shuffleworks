@@ -171,11 +171,17 @@ function readSharedLineup(): SharedLineup | null {
   const encoded = new URL(window.location.href).searchParams.get(SHARE_PARAM)
   if (!encoded) return null
   try {
-    const parsed = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(encoded.replace(/-/g, '+').replace(/_/g, '/')), (character) => character.charCodeAt(0)))) as SharedLineup
+    const parsed = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(encoded.replace(/-/g, '+').replace(/_/g, '/')), (character) => character.charCodeAt(0)))) as Partial<SharedLineup>
     if (!Array.isArray(parsed.groups) || parsed.groups.length < 2 || parsed.groups.length > 10) return null
-    if (!parsed.groups.every((group) => Array.isArray(group) && group.every((name) => typeof name === 'string'))) return null
-    const labels = Array.isArray(parsed.labels) ? parsed.labels.filter((label) => typeof label === 'string').slice(0, parsed.groups.length) : []
-    return { groups: parsed.groups, labels }
+    if (!parsed.groups.every((group) => Array.isArray(group) && group.length > 0 && group.every((name) => typeof name === 'string' && name.trim()))) return null
+    const groups = parsed.groups.map((group) => group.map((name) => name.trim()))
+    const labels = groups.map((_, index) => {
+      const label = Array.isArray(parsed.labels) ? parsed.labels[index] : undefined
+      return typeof label === 'string' && label.trim()
+        ? label.trim()
+        : CALLSIGNS[index] ?? `Team ${index + 1}`
+    })
+    return { groups, labels }
   } catch { return null }
 }
 
