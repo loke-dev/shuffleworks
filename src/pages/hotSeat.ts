@@ -1,4 +1,5 @@
 import { loadPlayers, parsePlayers, playersValue, savePlayers } from '../lib/partyPlayers'
+import { visualDelay } from '../lib/motion'
 import { randomInt, shuffled } from '../lib/random'
 import { createToolPage } from '../shell/createToolPage'
 
@@ -116,7 +117,7 @@ export function renderHotSeat(root: HTMLElement) {
       page.announcement.textContent = `${selected} is in the hot seat. ${prompt}`
       picking = false
       pickButton.disabled = false
-    }, 1050)
+    }, visualDelay(1050))
   }
 
   playerInput.addEventListener('change', syncPlayers)

@@ -1,4 +1,5 @@
 import { loadLocal, randomInt, saveLocal } from '../lib/random'
+import { visualDelay } from '../lib/motion'
 import { createToolPage } from '../shell/createToolPage'
 
 type Rarity = 'Common' | 'Uncommon' | 'Rare' | 'Epic' | 'Legendary'
@@ -138,7 +139,7 @@ export function renderLootbox(root: HTMLElement) {
       opening = false
       openButton.disabled = false
       packSelect.disabled = false
-    }, 3820)
+    }, visualDelay(3820))
   }
 
   openButton.addEventListener('click', open)

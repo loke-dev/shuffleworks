@@ -1,4 +1,5 @@
 import { loadLocal, saveLocal, shuffled } from '../lib/random'
+import { visualDelay } from '../lib/motion'
 import { createToolPage } from '../shell/createToolPage'
 
 const STORAGE_KEY='shuffleworks:card-deck:v2'
@@ -52,7 +53,7 @@ export function renderCards(root:HTMLElement){
     void drawnEl.offsetWidth
     drawnEl.classList.add('is-dealing');deckEl.classList.add('is-drawing')
     page.announcement.textContent=`Drew ${drawn.map(card=>card.split('|').slice(0,2).join(' ')).join(', ')}. ${deck.length} cards remain.`
-    window.setTimeout(()=>{dealing=false;draw.disabled=false;drawnEl.classList.remove('is-dealing');deckEl.classList.remove('is-drawing')},900)
+    window.setTimeout(()=>{dealing=false;draw.disabled=false;drawnEl.classList.remove('is-dealing');deckEl.classList.remove('is-drawing')},visualDelay(900))
   }
 
   root.querySelector<HTMLButtonElement>('[data-reset-deck]')!.addEventListener('click',()=>reset())

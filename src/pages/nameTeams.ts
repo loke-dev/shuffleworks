@@ -1,5 +1,6 @@
 import { loadLocal, saveLocal, shuffled } from '../lib/random'
 import { trackAnalytics } from '../lib/analytics'
+import { visualDelay } from '../lib/motion'
 import { createToolPage } from '../shell/createToolPage'
 
 const KEY = 'shuffleworks:team-names:v1'
@@ -95,7 +96,7 @@ export function renderNameTeams(root: HTMLElement) {
       renderGroups(groups)
       generated.classList.remove('is-mixing')
       generated.classList.add('is-revealing')
-      window.setTimeout(() => generated.classList.remove('is-revealing'), 1200)
+      window.setTimeout(() => generated.classList.remove('is-revealing'), visualDelay(1200))
       mixing = false
       button.disabled = false
       setSetupDisabled(false)
@@ -108,7 +109,7 @@ export function renderNameTeams(root: HTMLElement) {
     setSetupDisabled(true)
     generated.classList.add('is-mixing')
     summary.textContent = 'Redistributing players…'
-    window.setTimeout(reveal, 280)
+    window.setTimeout(reveal, visualDelay(280))
   }
 
   button.addEventListener('click', () => shuffleTeams())
