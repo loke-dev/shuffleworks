@@ -66,6 +66,8 @@ export function renderBottleSpin(root: HTMLElement) {
     const chosen = players[selectedIndex]
     result.textContent = chosen
     renderSeats()
+    playerInput.disabled = false
+    bottle.disabled = false
     spinButton.disabled = false
     page.announcement.textContent = `The bottle chose ${chosen}.`
   }
@@ -84,6 +86,8 @@ export function renderBottleSpin(root: HTMLElement) {
     const forwardDistance = (targetAngle - currentNormalized + 360) % 360
     rotation += (6 + randomInt(3)) * 360 + forwardDistance
     spinning = true
+    playerInput.disabled = true
+    bottle.disabled = true
     spinButton.disabled = true
     result.textContent = 'Spinning…'
     renderSeats()
