@@ -1,4 +1,6 @@
-import { readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import pages from '../seo-pages.json' with { type: 'json' }
 
 const origin = 'https://shuffle.loke.dev'
@@ -7,6 +9,7 @@ const template = await readFile(new URL('../dist/index.html', import.meta.url), 
 for (const page of pages) {
   const html = renderHead(template, page)
   const target = page.path === '/' ? new URL('../dist/index.html', import.meta.url) : new URL(`../dist${page.path}.html`, import.meta.url)
+  await mkdir(dirname(fileURLToPath(target)), { recursive: true })
   await writeFile(target, html)
 }
 
