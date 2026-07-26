@@ -23,7 +23,7 @@ export function renderNameTeams(root: HTMLElement) {
     accent: '#38a0ff',
     intro: 'Enter the players, choose the number of teams, and launch a fresh lineup.',
     controls: `<div class="name-editor" data-names></div><button class="text-action" data-add>+ Add player</button><label class="tool-field"><span>Number of teams</span><select data-team-count>${Array.from({ length: 9 }, (_, index) => index + 2).map((number) => `<option>${number}</option>`).join('')}</select></label><button class="tool-action" data-shuffle-names><span>Launch teams</span><kbd>Space</kbd></button>`,
-    stage: '<div class="team-board"><header><span>Live lineup</span><b data-team-summary>Ready to launch</b><button type="button" data-share-teams>Share lineup</button><i aria-hidden="true"></i></header><div class="generated-teams" data-generated></div></div>',
+    stage: '<div class="team-board"><header><span>Live lineup</span><b data-team-summary>Ready to launch</b><button type="button" data-share-teams disabled>Share lineup</button><i aria-hidden="true"></i></header><div class="generated-teams" data-generated></div></div>',
   })
   root.querySelector('.tool-shell')?.classList.add('teams-tool')
 
@@ -40,9 +40,23 @@ export function renderNameTeams(root: HTMLElement) {
   let currentGroups: string[][] = []
   let mixing = false
 
+  const invalidateGroups = () => {
+    currentGroups = []
+    shareButton.disabled = true
+    summary.textContent = names.length < 2
+      ? 'Add at least two players'
+      : 'Changes ready · launch teams'
+    const url = new URL(window.location.href)
+    if (url.searchParams.has(SHARE_PARAM)) {
+      url.searchParams.delete(SHARE_PARAM)
+      window.history.replaceState({}, '', url)
+    }
+  }
+
   const sync = () => {
     names = [...editor.querySelectorAll<HTMLInputElement>('input')].map((input) => input.value.trim()).filter(Boolean)
     saveLocal(KEY, names)
+    invalidateGroups()
   }
 
   const setSetupDisabled = (disabled: boolean) => {
@@ -72,6 +86,7 @@ export function renderNameTeams(root: HTMLElement) {
 
   const renderGroups = (groups: string[][]) => {
     currentGroups = groups.map((group) => [...group])
+    shareButton.disabled = false
     generated.innerHTML = groups.map((group, index) => `<article style="--team:${COLORS[index]};--delay:${index * 70}ms">
       <header><i>${String(index + 1).padStart(2, '0')}</i><div><span>Team ${index + 1}</span><input data-team-name="${index}" value="${escapeHtml(teamLabels[index] || CALLSIGNS[index])}" aria-label="Name for team ${index + 1}"></div><em>${group.length} ${group.length === 1 ? 'player' : 'players'}</em></header>
       <ol>${group.map((name) => `<li><i>${initials(name)}</i><b>${escapeHtml(name)}</b><span aria-hidden="true">↗</span></li>`).join('')}</ol>
@@ -85,8 +100,14 @@ export function renderNameTeams(root: HTMLElement) {
   }
 
   const shuffleTeams = (announce = true, animate = true) => {
+    if (mixing) return
     sync()
-    if (mixing || names.length < 2) return
+    if (names.length < 2) {
+      page.announcement.textContent = 'Add at least two players before launching teams.'
+      const firstPlayerControl = editor.querySelector<HTMLInputElement>('input') ?? addButton
+      firstPlayerControl.focus()
+      return
+    }
     const count = Math.min(Number(teamCount.value), names.length)
     const groups = Array.from({ length: count }, () => [] as string[])
     shuffled(names).forEach((name, index) => groups[index % count].push(name))
