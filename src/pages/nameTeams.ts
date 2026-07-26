@@ -45,13 +45,12 @@ export function renderNameTeams(root: HTMLElement) {
   }
 
   const renderEditor = () => {
-    editor.innerHTML = names.map((name, index) => `<label><span>${String(index + 1).padStart(2, '0')}</span><input value="${escapeHtml(name)}" aria-label="Player ${index + 1}"><button type="button" data-remove="${index}" aria-label="Remove ${escapeHtml(name)}">×</button></label>`).join('')
+    editor.innerHTML = names.map((name, index) => `<label><span>${String(index + 1).padStart(2, '0')}</span><input value="${escapeHtml(name)}" aria-label="Player ${index + 1}"><button type="button" data-remove aria-label="Remove ${escapeHtml(name)}">×</button></label>`).join('')
     editor.querySelectorAll('input').forEach((input) => input.addEventListener('input', sync))
     editor.querySelectorAll<HTMLButtonElement>('[data-remove]').forEach((remove) => remove.addEventListener('click', () => {
+      remove.closest('label')?.remove()
       sync()
-      names.splice(Number(remove.dataset.remove), 1)
       renderEditor()
-      sync()
     }))
   }
 
