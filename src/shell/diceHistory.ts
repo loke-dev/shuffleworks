@@ -1,5 +1,6 @@
 const STORAGE_KEY = 'shuffleworks:dice-history:v1'
 export const DICE_HISTORY_LIMIT = 25
+const DIE_SIDES = new Set([4, 6, 8, 10, 12, 20])
 
 export type DiceHistoryEntry = {
   id: string
@@ -40,10 +41,13 @@ function isDiceHistoryEntry(value: unknown): value is DiceHistoryEntry {
   const entry = value as Partial<DiceHistoryEntry>
   return typeof entry.id === 'string'
     && Number.isInteger(entry.sides)
+    && DIE_SIDES.has(Number(entry.sides))
     && Array.isArray(entry.values)
     && entry.values.length > 0
     && entry.values.length <= 6
     && entry.values.every((face) => Number.isInteger(face) && face > 0 && face <= Number(entry.sides))
     && entry.total === entry.values.reduce((sum, face) => sum + face, 0)
     && typeof entry.createdAt === 'number'
+    && Number.isFinite(entry.createdAt)
+    && !Number.isNaN(new Date(entry.createdAt).getTime())
 }
