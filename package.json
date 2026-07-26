@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "description": "Beautiful, tactile shuffle tools for teams, games, and chance.",
-  "packageManager": "pnpm@11.13.0",
+  "packageManager": "pnpm@11.17.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
