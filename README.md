@@ -1,4 +1,7 @@
 # Shuffleworks
+<p align="center">
+  <img width="720" height="auto" alt="image" src="https://github.com/user-attachments/assets/7edb0a6b-cead-4630-a4ef-b03958b997ad" />
+</p>
 
 Beautiful, tactile shuffle tools for teams, games, and chance.
 
