@@ -66,7 +66,7 @@ const packs: Record<string, { label: string; drops: Drop[] }> = {
 
 export function renderLootbox(root: HTMLElement) {
   document.title = 'Party Loot Box — Shuffleworks'
-  let history = loadLocal<Drop[]>(STORAGE_KEY, []).slice(0, 5)
+  let history = restoreHistory()
   let opening = false
 
   const page = createToolPage(root, {
@@ -102,7 +102,7 @@ export function renderLootbox(root: HTMLElement) {
 
   const renderHistory = () => {
     historyElement.innerHTML = history.length
-      ? history.map((item) => `<span class="loot-history-item rarity-${item.rarity.toLowerCase()}"><i>${item.icon}</i><b>${item.name}</b><em>${item.rarity}</em></span>`).join('')
+      ? history.map((item) => `<span class="loot-history-item rarity-${item.rarity.toLowerCase()}"><i>${escapeHtml(item.icon)}</i><b>${escapeHtml(item.name)}</b><em>${item.rarity}</em></span>`).join('')
       : '<p>No crates opened yet.</p>'
   }
 
@@ -157,6 +157,27 @@ function drop(name: string, description: string, rarity: Rarity, icon: string): 
   return { name, description, rarity, icon }
 }
 
+function restoreHistory(): Drop[] {
+  const stored = loadLocal<unknown>(STORAGE_KEY, [])
+  return Array.isArray(stored) ? stored.filter(isDrop).slice(0, 5) : []
+}
+
+function isDrop(value: unknown): value is Drop {
+  if (!value || typeof value !== 'object') return false
+  const item = value as Partial<Drop>
+  return typeof item.name === 'string'
+    && item.name.length > 0
+    && item.name.length <= 80
+    && typeof item.description === 'string'
+    && item.description.length > 0
+    && item.description.length <= 300
+    && typeof item.icon === 'string'
+    && item.icon.length > 0
+    && item.icon.length <= 8
+    && typeof item.rarity === 'string'
+    && Object.hasOwn(rarityWeight, item.rarity)
+}
+
 function chooseWeighted(items: Drop[]) {
   const weighted = items.map((item) => ({ item, weight: rarityWeight[item.rarity] / items.filter((candidate) => candidate.rarity === item.rarity).length }))
   const total = weighted.reduce((sum, entry) => sum + entry.weight, 0)
@@ -170,4 +191,10 @@ function chooseWeighted(items: Drop[]) {
 
 function dropTile(item: Drop, index: number) {
   return `<i class="loot-tile rarity-${item.rarity.toLowerCase()}" style="--loot-index:${index}"><b>${item.icon}</b><span>${item.name}</span><em>${item.rarity}</em></i>`
+}
+
+function escapeHtml(value: string) {
+  const node = document.createElement('span')
+  node.textContent = value
+  return node.innerHTML
 }
