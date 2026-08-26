@@ -8,9 +8,27 @@ type SeoPage = (typeof pages)[number]
 export function applySeo(route: RouteId) {
   const page = pages.find((candidate) => candidate.id === route)
   if (!page) {
-    document.title = 'Page not found — Shuffleworks'
+    const title = 'Page not found — Shuffleworks'
+    const description = 'The requested Shuffleworks page could not be found.'
+    const canonical = `${ORIGIN}${window.location.pathname}`
+    document.title = title
+    setMeta('name', 'description', description)
     setMeta('name', 'robots', 'noindex, follow')
-    setLink('canonical', `${ORIGIN}${window.location.pathname}`)
+    setMeta('property', 'og:type', 'website')
+    setMeta('property', 'og:site_name', 'Shuffleworks')
+    setMeta('property', 'og:title', title)
+    setMeta('property', 'og:description', description)
+    setMeta('property', 'og:url', canonical)
+    setMeta('name', 'twitter:card', 'summary')
+    setMeta('name', 'twitter:title', title)
+    setMeta('name', 'twitter:description', description)
+    removeMeta('property', 'og:image')
+    removeMeta('property', 'og:image:alt')
+    removeMeta('property', 'og:image:width')
+    removeMeta('property', 'og:image:height')
+    removeMeta('name', 'twitter:image')
+    removeMeta('name', 'twitter:image:alt')
+    setLink('canonical', canonical)
     document.querySelector('[data-seo-schema]')?.remove()
     return
   }
@@ -46,6 +64,10 @@ function setMeta(attribute: 'name' | 'property', key: string, content: string) {
     document.head.append(meta)
   }
   meta.content = content
+}
+
+function removeMeta(attribute: 'name' | 'property', key: string) {
+  document.head.querySelector(`meta[${attribute}="${key}"]`)?.remove()
 }
 
 function setLink(rel: string, href: string) {
